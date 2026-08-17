@@ -1,0 +1,5 @@
+# geçici dosyalar
+*.tmp
+_blok_yedek.txt
+.DS_Store
+Thumbs.db

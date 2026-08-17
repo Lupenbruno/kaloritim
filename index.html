@@ -1,0 +1,3152 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kaloritim — Akıllı Beslenme Matı Uygulaması</title>
+<meta name="description" content="Kaloritim, evcil hayvanlar için akıllı beslenme matı ve vücut analizi uygulaması. Ağırlık, mama ve su tüketimi takibi, vücut kompozisyonu analizi ve klinik rapor.">
+<meta name="theme-color" content="#E2001A">
+<link rel="canonical" href="https://kaloritim.pet/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kaloritim">
+<meta property="og:title" content="Kaloritim — Akıllı Beslenme Matı Uygulaması">
+<meta property="og:description" content="Evcil hayvanlar için vücut kompozisyonu, sıvı dengesi ve beslenme takibi. Konsept arayüz.">
+<meta property="og:url" content="https://kaloritim.pet/">
+<meta property="og:locale" content="tr_TR">
+<meta name="twitter:card" content="summary">
+<script src="katalog.js" defer></script>
+<link rel="icon" href="logo-amblem.png">
+<link rel="apple-touch-icon" href="logo-amblem.png">
+<style>
+/* ============================================================
+   KALORİTİM — konsept arayüz mockup'ı
+   Sahne (sayfa) teması aydınlık/karanlık uyumlu.
+   Telefon içindeki uygulama teması sabit aydınlıktır (--a-*).
+   ============================================================ */
+
+:root{
+  /* --- sahne (sayfa çerçevesi) --- */
+  --stage-bg:#EDE7E8;
+  --stage-bg-2:#E3DBDD;
+  --stage-ink:#1E1619;
+  --stage-ink-2:#6B5E63;
+  --stage-line:#D6CBCE;
+  --stage-card:#FFFFFF;
+  --stage-shadow:0 40px 90px -30px rgba(60,20,28,.45), 0 4px 14px rgba(60,20,28,.10);
+
+  /* --- uygulama paleti (tema değişse de sabit) --- */
+  --a-red:#E2001A;
+  --a-red-deep:#A80014;
+  --a-red-soft:#FDEEF0;
+  --a-ink:#171114;
+  --a-ink-2:#6A5C61;
+  --a-ink-3:#9B8F93;
+  --a-line:#EBE4E6;
+  --a-surf:#FFFFFF;
+  --a-surf-2:#F7F3F4;
+  --a-surf-3:#F1ECED;
+  --ok:#1B9E5E;
+  --ok-soft:#E8F6EE;
+  --warn:#EE9A12;
+  --warn-soft:#FDF2E0;
+  --crit:#E2001A;
+  --crit-soft:#FDEBED;
+  --info:#2F6FDB;
+  --info-soft:#EAF1FD;
+
+  --ui:"Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",Arial,sans-serif;
+  /* sayılar: teknik/monospace değil, yumuşak ve yuvarlak hatlı bir aile */
+  --num:ui-rounded,"SF Pro Rounded","Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,"Avenir Next",sans-serif;
+
+  --r-lg:20px; --r-md:14px; --r-sm:10px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --stage-bg:#151012;
+    --stage-bg-2:#0E0A0C;
+    --stage-ink:#F4EEF0;
+    --stage-ink-2:#A2939A;
+    --stage-line:#2B2226;
+    --stage-card:#1D171A;
+    --stage-shadow:0 50px 110px -35px rgba(0,0,0,.85), 0 4px 18px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --stage-bg:#151012;
+  --stage-bg-2:#0E0A0C;
+  --stage-ink:#F4EEF0;
+  --stage-ink-2:#A2939A;
+  --stage-line:#2B2226;
+  --stage-card:#1D171A;
+  --stage-shadow:0 50px 110px -35px rgba(0,0,0,.85), 0 4px 18px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--stage-bg);
+  background-image:radial-gradient(120% 80% at 50% -10%, var(--stage-bg) 0%, var(--stage-bg-2) 100%);
+  color:var(--stage-ink);
+  font-family:var(--ui);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+}
+
+/* ---------- üst şerit ----------
+   Matın kenarındaki koyu gösterge bandını yansıtır: her iki temada da koyu
+   kalır, cihazın çerçevesiyle aynı malzemedir.                              */
+.topbar{background:#171114;border-bottom:1px solid rgba(255,255,255,.09)}
+.topbar-in{
+  max-width:1180px;margin:0 auto;padding:0 24px;min-height:66px;
+  display:flex;align-items:center;gap:13px;
+}
+.tb-amblem{height:32px;width:auto;display:block;flex:0 0 auto}
+/* logonun kendi harf formları, koyu şeritte okunsun diye beyaza çevrildi */
+.tb-yazi{height:19px;width:auto;display:block;flex:0 0 auto;filter:brightness(0) invert(1)}
+.tb-rule{width:1px;height:19px;background:rgba(255,255,255,.15);margin:0 3px;flex:0 0 auto}
+.tb-desc{font-size:12px;color:rgba(255,255,255,.44);white-space:nowrap}
+
+.tb-actions{display:flex;align-items:center;gap:2px;flex:0 0 auto}
+.tb-actions button{
+  position:relative;font:inherit;font-size:12.5px;font-weight:600;
+  background:none;border:0;color:rgba(255,255,255,.52);
+  padding:10px 12px;cursor:pointer;transition:color .16s,background .16s,border-color .16s;
+}
+.tb-actions button:hover{color:#fff}
+.tb-actions button[aria-pressed="true"]{color:#fff}
+.tb-actions button[aria-pressed="true"]::after{
+  content:"";position:absolute;left:12px;right:12px;bottom:4px;height:2px;background:#E2001A;
+}
+.tb-actions button.tb-cta{
+  margin-left:10px;padding:9px 14px;border:1px solid rgba(255,255,255,.24);
+  border-radius:8px;color:rgba(255,255,255,.92);
+}
+.tb-actions button.tb-cta:hover{background:#E2001A;border-color:#E2001A;color:#fff}
+.tb-actions button:focus-visible{outline:2px solid #E2001A;outline-offset:2px;border-radius:6px}
+
+@media (max-width:980px){ .tb-desc,.tb-rule{display:none} }
+@media (max-width:800px){
+  .tb-readout{display:none}
+  .topbar-in{flex-wrap:wrap;padding:12px 18px;gap:8px}
+  .tb-actions{margin-left:auto}
+}
+
+/* ---------- sahne gövdesi ---------- */
+.stage{max-width:1180px;margin:0 auto;padding:0 24px 70px}
+.single{display:flex;justify-content:center;padding:40px 0 0}
+.hidden{display:none !important}
+
+/* ---------- telefon ---------- */
+.phone{
+  width:390px;height:844px;flex:0 0 auto;
+  background:#0D0A0B;border-radius:54px;padding:11px;
+  box-shadow:var(--stage-shadow);position:relative;
+}
+.screen{
+  position:relative;width:100%;height:100%;overflow:hidden;
+  border-radius:44px;background:var(--a-surf-2);
+  display:flex;flex-direction:column;color:var(--a-ink);
+}
+.island{
+  position:absolute;top:9px;left:50%;transform:translateX(-50%);
+  width:112px;height:31px;background:#0D0A0B;border-radius:999px;z-index:40;
+}
+.statusbar{
+  height:52px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 26px 0;font-size:13.5px;font-weight:600;background:var(--a-surf);
+  z-index:30;
+}
+.statusbar .sb-time{font-family:var(--num);letter-spacing:-.02em}
+.statusbar .sb-icons{display:flex;align-items:center;gap:6px}
+.statusbar svg{display:block}
+
+/* app bar */
+.appbar{
+  flex:0 0 auto;background:var(--a-surf);padding:2px 20px 13px;
+  display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--a-line);
+}
+.appbar .ab-amblem{height:29px;width:auto;display:block;flex:0 0 auto}
+.appbar .ab-yazi{height:16px;width:auto;display:block;flex:0 0 auto;margin-left:-2px}
+.appbar .spacer{flex:1}
+.appbar .iconbtn{
+  width:32px;height:32px;border-radius:50%;border:1px solid var(--a-line);background:var(--a-surf);
+  display:grid;place-items:center;color:var(--a-ink-2);
+}
+.appbar .iconbtn svg{width:16px;height:16px}
+
+/* içerik alanı */
+.views{flex:1;overflow:hidden;position:relative}
+.view{
+  position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+  padding:16px 16px 26px;display:none;flex-direction:column;gap:13px;
+  scrollbar-width:thin;
+}
+.view.is-active{display:flex}
+.view > *{flex:0 0 auto}   /* kartların dikey flex içinde sıkışıp kırpılmasını önler */
+.view::-webkit-scrollbar{width:5px}
+.view::-webkit-scrollbar-thumb{background:#DCD3D6;border-radius:9px}
+
+/* tab bar */
+.tabbar{
+  flex:0 0 auto;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);
+  border-top:1px solid var(--a-line);
+  display:grid;grid-template-columns:repeat(5,1fr);padding:9px 6px 22px;
+}
+.tabbar button{
+  background:none;border:0;font:inherit;cursor:pointer;padding:4px 0 0;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  color:var(--a-ink-3);font-size:10px;font-weight:600;letter-spacing:.005em;
+  transition:color .16s;
+}
+.tabbar button svg{width:22px;height:22px;display:block}
+.tabbar button[aria-selected="true"]{color:var(--a-red)}
+.tabbar button:focus-visible{outline:2px solid var(--a-red);outline-offset:2px;border-radius:8px}
+.homebar{
+  position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+  width:136px;height:5px;border-radius:99px;background:#1B1416;opacity:.85;z-index:35;
+}
+
+/* ---------- kart sistemi ---------- */
+.card{
+  background:var(--a-surf);border:1px solid var(--a-line);border-radius:var(--r-lg);
+  padding:15px;display:flex;flex-direction:column;gap:11px;
+}
+.card.flush{padding:0;overflow:hidden}
+.sect{
+  font-family:var(--num);font-size:10px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--a-ink-3);font-weight:600;margin:7px 2px -3px;
+}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-head > :first-child{min-width:0}   /* dar alanda kapsül değil, başlık daralsın */
+.card-title{font-size:13.5px;font-weight:700;letter-spacing:-.005em}
+.card-sub{font-size:11.5px;color:var(--a-ink-2);line-height:1.45}
+.hint{font-size:11px;color:var(--a-ink-3);line-height:1.5}
+
+.num{font-family:var(--num);font-variant-numeric:lining-nums tabular-nums;letter-spacing:-.025em}
+.big{font-size:30px;font-weight:700;line-height:1}
+.mid{font-size:20px;font-weight:700;line-height:1}
+.unit{font-size:11.5px;font-weight:600;color:var(--a-ink-2);margin-left:3px;letter-spacing:0}
+
+.pill{
+  display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;
+  font-size:10.5px;font-weight:700;letter-spacing:.01em;
+  white-space:nowrap;flex:0 0 auto;
+}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:#B87308}
+.pill.crit{background:var(--crit-soft);color:var(--a-red)}
+.pill.info{background:var(--info-soft);color:var(--info)}
+.pill.mute{background:var(--a-surf-3);color:var(--a-ink-2)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:0 0 auto}
+
+/* profil paneli ve yeni hayvan formu */
+.pf-satir{
+  display:flex;align-items:center;gap:11px;width:100%;text-align:left;font:inherit;color:inherit;
+  background:var(--a-surf);border:1px solid var(--a-line);border-radius:12px;padding:10px 12px;cursor:pointer;
+}
+.pf-satir:hover{border-color:var(--a-ink-3)}
+.pf-satir.sec{border-color:var(--a-red);background:var(--crit-soft)}
+.pf-foto{border-radius:50%;object-fit:cover;flex:0 0 auto;border:2px solid var(--a-surf);box-shadow:0 1px 4px rgba(23,17,20,.2)}
+.pf-harf{
+  border-radius:50%;flex:0 0 auto;display:grid;place-items:center;
+  background:var(--a-red);color:#fff;font-weight:700;letter-spacing:-.02em;
+}
+.yh-foto{display:flex;align-items:center;gap:12px;cursor:pointer}
+.yh-foto .onizleme{
+  width:62px;height:62px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;overflow:hidden;
+  background:var(--a-surf-3);border:2px dashed var(--a-line);
+}
+.yh-foto .onizleme img{width:100%;height:100%;object-fit:cover}
+.yh-foto .yh-ikon{font-size:24px;color:var(--a-ink-3);font-weight:300;line-height:1}
+
+/* hayvan başlığı */
+.pet{
+  display:flex;align-items:center;gap:13px;
+  background:linear-gradient(135deg,var(--a-red) 0%,var(--a-red-deep) 100%);
+  border-radius:var(--r-lg);padding:15px;color:#fff;border:0;
+}
+.pet .avatar{
+  width:54px;height:54px;border-radius:50%;flex:0 0 auto;
+  background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.55);
+  display:grid;place-items:center;
+}
+.pet{width:100%;text-align:left;font:inherit;cursor:pointer}
+.pet .avatar{overflow:hidden;padding:0}
+.pet .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.pet .avatar .bas-harf{font-size:21px;font-weight:700;color:#fff;letter-spacing:-.02em}
+.pet .avatar svg{width:32px;height:32px}
+.pet-bilgi{flex:1;min-width:0;display:block}
+.pet .ad{display:block;font-size:19px;font-weight:700;letter-spacing:-.01em}
+.pet .meta{display:block;font-size:11.5px;opacity:.9;margin-top:2px}
+.pet-degis{
+  flex:0 0 auto;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(255,255,255,.18);color:#fff;
+}
+.pet-degis svg{width:16px;height:16px}
+.pet:hover .pet-degis{background:rgba(255,255,255,.3)}
+.pet .sync{
+  display:inline-flex;align-items:center;gap:5px;margin-top:7px;
+  font-size:10px;font-weight:600;background:rgba(255,255,255,.16);
+  padding:3px 8px;border-radius:999px;
+}
+.pet .sync .dot{background:#7CFFB2}
+
+/* metrik ızgarası */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.metric{
+  background:var(--a-surf);border:1px solid var(--a-line);border-radius:var(--r-md);
+  padding:12px 13px;display:flex;flex-direction:column;gap:7px;
+}
+.metric .lbl{
+  font-family:var(--num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a-ink-3);font-weight:600;
+}
+.metric .foot{font-size:10.5px;color:var(--a-ink-2)}
+
+/* ölçek çubuğu */
+.scale{height:6px;border-radius:99px;overflow:hidden;display:flex;gap:2px}
+.scale i{flex:1;background:var(--a-surf-3)}
+.scale i.on{background:currentColor}
+.track{height:6px;border-radius:99px;background:var(--a-surf-3);overflow:hidden}
+.track b{display:block;height:100%;border-radius:99px;background:var(--a-red)}
+.track.g b{background:var(--ok)} .track.y b{background:var(--warn)} .track.b b{background:var(--info)}
+
+/* kase durumu */
+.bowl{display:flex;gap:13px;align-items:center}
+.bowl .viz{width:104px;height:78px;flex:0 0 auto}
+.legend{display:flex;flex-direction:column;gap:6px;font-size:11px}
+.legend div{display:flex;align-items:center;gap:7px;color:var(--a-ink-2)}
+.legend b{color:var(--a-ink);font-weight:600}
+.swatch{width:9px;height:9px;border-radius:3px;flex:0 0 auto}
+
+/* halka göstergeler */
+.rings{display:flex;justify-content:space-around;padding:4px 0 2px}
+.ring{display:flex;flex-direction:column;align-items:center;gap:6px}
+.ring .cap{font-size:11px;color:var(--a-ink-2);font-weight:600}
+.ring .amount{font-size:9.5px;color:var(--a-ink-3);font-family:var(--num)}
+.ring svg{transform:rotate(-90deg)}
+.ring .wrap{position:relative;width:96px;height:96px;display:grid;place-items:center}
+.ring .wrap .val{position:absolute;text-align:center;line-height:1.05}
+.ring .wrap .val .n{font-family:var(--num);font-size:19px;font-weight:700;letter-spacing:-.03em}
+.ring .wrap .val .u{font-size:9.5px;color:var(--a-ink-2);font-weight:600}
+
+/* liste satırları */
+.rows{display:flex;flex-direction:column}
+.row{
+  display:flex;align-items:center;gap:11px;padding:12px 15px;
+  border-bottom:1px solid var(--a-line);
+}
+.row:last-child{border-bottom:0}
+.row .ic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex:0 0 auto}
+.row .ic svg{width:17px;height:17px}
+.row .txt{flex:1;min-width:0}
+.row .t1{font-size:12.5px;font-weight:600;letter-spacing:-.005em}
+.row .t2{font-size:11px;color:var(--a-ink-2);margin-top:2px;line-height:1.42}
+.row .val{font-family:var(--num);font-size:13px;font-weight:700;letter-spacing:-.02em;text-align:right}
+.row .val small{display:block;font-size:9.5px;font-weight:600;color:var(--a-ink-3);letter-spacing:0}
+.chev{color:var(--a-ink-3);flex:0 0 auto}
+.chev svg{width:14px;height:14px;display:block}
+
+/* köpek silueti + bölge değerleri */
+.siluet{
+  position:relative;width:100%;max-width:288px;margin:4px auto 8px;
+  aspect-ratio:325/263;
+}
+.siluet img{width:100%;height:100%;display:block;object-fit:contain}
+.siluet.kedi img{filter:brightness(1.35)}   /* kedi görseli daha koyu geliyor */
+.siluet-zemin{
+  position:absolute;left:8%;right:8%;bottom:-2%;height:9px;border-radius:50%;
+  background:radial-gradient(ellipse at center, rgba(23,17,20,.16) 0%, rgba(23,17,20,0) 72%);
+}
+.siluet-pt{
+  position:absolute;transform:translate(-50%,-50%);
+  min-width:27px;height:27px;padding:0 6px;border-radius:999px;
+  display:grid;place-items:center;color:#fff;
+  font-family:var(--num);font-variant-numeric:lining-nums tabular-nums;
+  font-size:11px;font-weight:700;letter-spacing:-.02em;
+  border:2px solid var(--a-surf);box-shadow:0 2px 7px rgba(23,17,20,.3);
+}
+
+/* inbody tarzı bölümsel satır */
+.seg{display:flex;flex-direction:column;gap:6px}
+.seg .top{display:flex;justify-content:space-between;align-items:baseline;font-size:11.5px}
+.seg .top b{font-weight:600}
+.seg .top .v{font-family:var(--num);font-size:12px;font-weight:700;letter-spacing:-.02em}
+.bararea{position:relative;height:16px;background:var(--a-surf-3);border-radius:5px;overflow:hidden}
+.bararea .band{position:absolute;top:0;bottom:0;background:rgba(27,158,94,.13);border-left:1px dashed rgba(27,158,94,.5);border-right:1px dashed rgba(27,158,94,.5)}
+.bararea .fill{position:absolute;top:3px;bottom:3px;left:0;border-radius:4px;background:var(--a-red)}
+.bararea .fill.ok{background:var(--ok)} .bararea .fill.warn{background:var(--warn)}
+.axis{display:flex;justify-content:space-between;font-family:var(--num);font-size:8.5px;color:var(--a-ink-3);letter-spacing:.04em}
+
+/* segment kontrol */
+.segctl{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:3px;
+  background:var(--a-surf-3);border-radius:11px;
+}
+.segctl button{
+  font:inherit;font-size:11.5px;font-weight:600;border:0;background:none;color:var(--a-ink-2);
+  padding:7px 0;border-radius:8px;cursor:pointer;transition:background .16s,color .16s;
+}
+.segctl button[aria-pressed="true"]{background:var(--a-surf);color:var(--a-ink);box-shadow:0 1px 3px rgba(23,17,20,.13)}
+.segctl button:focus-visible{outline:2px solid var(--a-red);outline-offset:1px}
+
+/* grafik kutusu */
+.chart{width:100%;display:block}
+.chart-legend{display:flex;gap:13px;font-size:10.5px;color:var(--a-ink-2)}
+.chart-legend span{display:flex;align-items:center;gap:5px}
+.delta{font-family:var(--num);font-size:11px;font-weight:700;letter-spacing:-.01em}
+.delta.up{color:var(--crit)} .delta.down{color:var(--info)} .delta.good{color:var(--ok)}
+
+/* uyarı kartı */
+.alert{
+  display:flex;gap:11px;padding:13px 14px;border-radius:var(--r-md);
+  border:1px solid var(--a-line);background:var(--a-surf);align-items:flex-start;
+}
+.alert .bar{width:3px;border-radius:99px;align-self:stretch;flex:0 0 auto}
+.alert .t1{font-size:12.5px;font-weight:700;letter-spacing:-.005em}
+.alert .t2{font-size:11.5px;color:var(--a-ink-2);margin-top:3px;line-height:1.5}
+.alert .when{font-family:var(--num);font-size:9.5px;color:var(--a-ink-3);margin-top:6px;letter-spacing:.03em}
+.alert.crit{background:var(--crit-soft);border-color:#F7CDD3}
+.alert.warn{background:var(--warn-soft);border-color:#F5E0BC}
+.alert.ok{background:var(--ok-soft);border-color:#C9E9D7}
+
+/* topper çipleri */
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{
+  display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:var(--r-md);
+  border:1px solid var(--a-line);background:var(--a-surf-2);font-size:11.5px;font-weight:600;
+}
+.chip .q{font-family:var(--num);color:var(--a-ink-2);font-weight:700}
+.chip.add{border-style:dashed;color:var(--a-ink-3);background:none}
+
+/* geçiş anahtarı */
+.sw{width:40px;height:24px;border-radius:99px;background:var(--a-surf-3);position:relative;flex:0 0 auto}
+.sw.on{background:var(--ok)}
+.sw i{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.28)}
+.sw.on i{left:18px}
+
+/* ---------- açılır ayar satırları ve kontroller ---------- */
+.rowgrp{border-bottom:1px solid var(--a-line)}
+.rowgrp:last-child{border-bottom:0}
+.rowgrp .row{border:none;width:100%;font:inherit;color:inherit;text-align:left;background:none;cursor:pointer}
+.rowgrp .row:hover{background:var(--a-surf-2)}
+.rowgrp .row:focus-visible{outline:2px solid var(--a-red);outline-offset:-2px}
+.rowgrp .chev svg{transition:transform .18s}
+.rowgrp.open .chev svg{transform:rotate(90deg)}
+.rowgrp.open .row{background:var(--a-surf-2)}
+.detail{display:none;flex-direction:column;gap:11px;padding:3px 15px 16px;background:var(--a-surf-2)}
+.rowgrp.open .detail{display:flex}
+.flabel{font-size:11.5px;font-weight:700;letter-spacing:-.005em}
+.fhint{font-size:10.5px;color:var(--a-ink-3);line-height:1.5}
+.frow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.fstack{display:flex;flex-direction:column;gap:5px}
+.tinput{
+  width:100%;font:inherit;font-size:12.5px;padding:9px 11px;border:1px solid var(--a-line);
+  border-radius:9px;background:var(--a-surf);color:var(--a-ink);
+}
+.tinput:focus{outline:2px solid var(--a-red);outline-offset:1px;border-color:transparent}
+input[type=range]{width:100%;accent-color:var(--a-red);height:22px}
+.btn{
+  font:inherit;font-size:12px;font-weight:600;padding:9px 13px;border-radius:9px;
+  border:1px solid var(--a-line);background:var(--a-surf);color:var(--a-ink);cursor:pointer;
+}
+.btn:hover{background:var(--a-surf-3)}
+.btn.primary{background:var(--a-red);border-color:var(--a-red);color:#fff}
+.btn.primary:hover{background:var(--a-red-deep)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible{outline:2px solid var(--a-red);outline-offset:2px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+.stepper{display:flex;align-items:center;border:1px solid var(--a-line);border-radius:9px;overflow:hidden;background:var(--a-surf)}
+.stepper button{width:30px;height:30px;border:0;background:none;font:inherit;font-size:15px;font-weight:700;color:var(--a-red);cursor:pointer;line-height:1}
+.stepper button:disabled{color:var(--a-ink-3);cursor:default}
+.stepper span{min-width:48px;text-align:center;font-family:var(--num);font-size:11.5px;font-weight:700}
+/* mama seçim satırı */
+.mamaopt{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;
+  font:inherit;color:inherit;text-align:left;cursor:pointer;
+  background:var(--a-surf);border:1px solid var(--a-line);border-radius:10px;padding:10px 12px;
+}
+.mamaopt:hover{border-color:var(--a-ink-3)}
+.mamaopt.sec{border-color:var(--a-red);background:var(--crit-soft)}
+.mamaopt.sec .flabel{color:var(--a-red)}
+.mamaopt:focus-visible{outline:2px solid var(--a-red);outline-offset:1px}
+.rc-disi{
+  display:inline-block;vertical-align:1px;margin-left:5px;
+  background:var(--warn-soft);color:#B87308;border-radius:5px;
+  padding:1px 5px;font-size:9px;font-weight:700;letter-spacing:.02em;
+}
+.tar-marka-uyari{
+  display:flex;gap:9px;align-items:flex-start;
+  background:rgba(238,154,18,.18);border:1px solid rgba(238,154,18,.5);
+  border-radius:10px;padding:10px 12px;font-size:11.5px;line-height:1.5;color:#fff;
+}
+.tar-marka-uyari .ikon{
+  width:18px;height:18px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;
+  background:#EE9A12;color:#241a06;font-weight:800;font-size:12px;margin-top:1px;
+}
+.tar-marka-uyari b{display:block;margin-bottom:2px}
+/* listede olmayan mama ekleme */
+.mamaekle{
+  display:flex;align-items:center;gap:11px;width:100%;
+  font:inherit;color:inherit;text-align:left;cursor:pointer;
+  background:none;border:1px dashed var(--a-line);border-radius:10px;padding:11px 12px;
+}
+.mamaekle:hover{border-color:var(--a-red);background:var(--crit-soft)}
+.mamaekle:focus-visible{outline:2px solid var(--a-red);outline-offset:1px}
+.mamaekle .arti{
+  width:26px;height:26px;border-radius:8px;flex:0 0 auto;display:grid;place-items:center;
+  background:var(--crit-soft);color:var(--a-red);font-size:17px;font-weight:700;line-height:1;
+}
+.mamaform{
+  display:flex;flex-direction:column;gap:10px;
+  background:var(--a-surf-2);border:1px solid var(--a-line);border-radius:12px;padding:13px;
+}
+.sw{cursor:pointer;border:0;padding:0}
+.sw i{transition:left .16s}
+/* barkod tarayıcı */
+.tarayici{position:absolute;inset:0;z-index:50;background:#0C0A0B;display:flex;flex-direction:column}
+.tarayici video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tar-ust{
+  position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:56px 18px 14px;color:#fff;
+  background:linear-gradient(180deg,rgba(12,10,11,.92) 0%,rgba(12,10,11,.55) 70%,transparent 100%);
+}
+.tar-ust .t1{font-size:14px;font-weight:700}
+.tar-ust .t2{font-size:11px;opacity:.7;margin-top:2px}
+.tar-kapat{
+  font:inherit;font-size:12px;font-weight:600;color:#fff;cursor:pointer;flex:0 0 auto;
+  background:rgba(255,255,255,.16);border:0;border-radius:999px;padding:8px 14px;
+}
+.tar-orta{position:relative;z-index:2;flex:1;display:grid;place-items:center;padding:0 34px}
+.tar-cerceve{
+  width:100%;aspect-ratio:1.5;border-radius:14px;position:relative;
+  box-shadow:0 0 0 2000px rgba(12,10,11,.5);
+}
+.tar-cerceve i{position:absolute;width:26px;height:26px;border:3px solid #fff;border-radius:3px}
+.tar-cerceve i:nth-child(1){top:-2px;left:-2px;border-right:0;border-bottom:0;border-top-left-radius:12px}
+.tar-cerceve i:nth-child(2){top:-2px;right:-2px;border-left:0;border-bottom:0;border-top-right-radius:12px}
+.tar-cerceve i:nth-child(3){bottom:-2px;left:-2px;border-right:0;border-top:0;border-bottom-left-radius:12px}
+.tar-cerceve i:nth-child(4){bottom:-2px;right:-2px;border-left:0;border-top:0;border-bottom-right-radius:12px}
+.tar-cizgi{
+  position:absolute;left:8px;right:8px;height:2px;background:var(--a-red);
+  box-shadow:0 0 12px 2px rgba(226,0,26,.8);animation:tarama 2.1s ease-in-out infinite;
+}
+@keyframes tarama{0%,100%{top:12%}50%{top:88%}}
+.tar-alt{
+  position:relative;z-index:2;padding:16px 18px 30px;color:#fff;text-align:center;
+  background:linear-gradient(0deg,rgba(12,10,11,.92) 0%,rgba(12,10,11,.55) 70%,transparent 100%);
+}
+.tar-durum{font-size:12.5px;font-weight:600;min-height:18px}
+.tar-kod{
+  font-family:var(--num);font-variant-numeric:lining-nums tabular-nums;
+  font-size:15px;font-weight:700;letter-spacing:.06em;margin-top:6px;
+}
+.tar-elle{
+  margin-top:12px;font:inherit;font-size:12px;font-weight:600;color:#fff;cursor:pointer;
+  background:none;border:1px solid rgba(255,255,255,.3);border-radius:9px;padding:9px 14px;
+}
+.tar-elle:hover{background:rgba(255,255,255,.12)}
+.tar-form{display:flex;flex-direction:column;gap:9px;margin-top:12px;text-align:left}
+.tar-urun{
+  display:flex;align-items:center;gap:11px;padding:9px 10px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:10px;
+}
+.tar-urun img,.tar-urun .yer{
+  width:42px;height:42px;border-radius:8px;flex:0 0 auto;object-fit:contain;
+  background:rgba(255,255,255,.9);
+}
+.tar-besin{
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;
+}
+.tar-besin .baslik{
+  font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.55);font-weight:700;margin-bottom:2px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.tar-besin .baslik button{
+  font:inherit;font-size:9.5px;letter-spacing:.06em;text-transform:none;
+  color:rgba(255,255,255,.7);background:none;border:0;cursor:pointer;
+  text-decoration:underline;padding:0;
+}
+.bs-satir{
+  display:grid;grid-template-columns:74px 1fr 52px;gap:8px;align-items:center;
+  font-size:11.5px;color:rgba(255,255,255,.82);
+}
+.bs-satir em{font-style:normal;font-size:10.5px;color:rgba(255,255,255,.5)}
+.bs-satir .tinput{padding:7px 9px;font-size:12px}
+.bs-satir.bs-ekstra{grid-template-columns:1fr 1fr 26px}
+.bs-sil{
+  width:26px;height:26px;border-radius:7px;border:1px solid rgba(255,255,255,.22);
+  background:none;color:rgba(255,255,255,.75);font-size:15px;line-height:1;cursor:pointer;
+}
+.bs-sil:hover{background:rgba(226,0,26,.55);border-color:transparent;color:#fff}
+.bs-ekle{
+  font:inherit;font-size:11.5px;font-weight:600;color:rgba(255,255,255,.8);cursor:pointer;
+  background:none;border:1px dashed rgba(255,255,255,.28);border-radius:9px;padding:8px 10px;
+}
+.bs-ekle:hover{border-color:rgba(255,255,255,.6);color:#fff}
+.tar-form .tinput{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:#fff}
+.tar-form .tinput::placeholder{color:rgba(255,255,255,.45)}
+
+/* telefon içi alt sayfa */
+.sheet-wrap{
+  position:absolute;inset:0;z-index:44;background:rgba(23,17,20,.42);
+  display:flex;align-items:flex-end;
+}
+.sheet{
+  width:100%;background:var(--a-surf);border-radius:22px 22px 44px 44px;
+  max-height:78%;display:flex;flex-direction:column;
+}
+.sheet-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+  padding:16px 16px 12px;border-bottom:1px solid var(--a-line);
+}
+.sheet-body{
+  padding:13px 16px 34px;display:flex;flex-direction:column;gap:9px;overflow-y:auto;
+}
+.toast{
+  position:absolute;left:50%;bottom:104px;transform:translateX(-50%);z-index:46;
+  background:#1B1416;color:#fff;font-size:11.5px;font-weight:600;padding:10px 16px;border-radius:999px;
+  box-shadow:0 12px 26px -10px rgba(0,0,0,.6);opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;max-width:80%;text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-8px)}
+
+/* =========================================================================
+   A4 KLİNİK RAPOR — ekranda önizleme, yazdırırken tek sayfa PDF
+   Renkler baskı için sabittir (tema değişimine bağlı değil).
+   ========================================================================= */
+.report-overlay{
+  position:fixed;inset:0;z-index:200;background:rgba(20,12,15,.72);
+  overflow-y:auto;padding:26px 16px 60px;
+}
+.report-overlay.hidden{display:none}
+.report-tools{
+  max-width:210mm;margin:0 auto 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+  color:#fff;font-size:12.5px;
+}
+.report-tools .grow{flex:1;font-weight:600}
+.report{
+  --in-red: #C8102E; --in-ink: #111; --in-line: #000; --in-line2: #D4D4D4; --in-bg: #EAEAEA;
+  width:210mm;min-height:297mm;margin:0 auto;background:#fff;color:var(--in-ink);
+  padding:12mm 10mm;box-shadow:0 30px 70px -20px rgba(0,0,0,.6);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 7.5pt; line-height: 1.2;
+}
+.report * {box-sizing:border-box;}
+.in-head {display:flex; justify-content:space-between; align-items:flex-end; border-bottom: 2.5px solid var(--in-red); padding-bottom: 4px; margin-bottom: 4px;}
+.in-logo {font-family: "Arial Black", sans-serif; font-size: 26pt; color: var(--in-red); letter-spacing: -1.5px; line-height: 0.9;}
+.in-head-r {font-size: 7pt; color: #555; text-align: right;}
+
+.in-id {display: grid; grid-template-columns: 1.2fr 0.7fr 0.7fr 1fr 1.2fr; border-bottom: 1.5px solid var(--in-line); margin-bottom: 10px;}
+.in-id div {padding: 3px 5px; border-right: 1px solid var(--in-line2);}
+.in-id div:last-child {border-right: none;}
+.in-id .k {font-size: 6.5pt; color: #666; margin-bottom: 1px;}
+.in-id .v {font-size: 8.5pt; font-weight: bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+
+.in-cols {display: grid; grid-template-columns: 58% 38%; gap: 4%;}
+
+.in-sec {margin-bottom: 12px;}
+.in-sec-title {
+  background: var(--in-bg); padding: 4px 6px; font-weight: bold; font-size: 8.5pt; letter-spacing: -0.01em;
+  border-top: 1.5px solid var(--in-line); border-bottom: 1px solid var(--in-line); margin-bottom: 6px;
+}
+
+.in-comp {width: 100%; border-collapse: collapse; text-align: center; font-size: 7.5pt; margin-bottom: 10px;}
+.in-comp th {background: var(--in-bg); padding: 4px; font-weight: normal; border: 1px solid var(--in-line2); font-size: 6.5pt; color: #444;}
+.in-comp td {border: 1px solid var(--in-line2); padding: 5px; vertical-align: middle;}
+.in-comp .lbl {font-weight: bold; text-align: left;}
+.in-comp .val {font-weight: bold; font-size: 9.5pt; margin-bottom: 2px;}
+.in-comp .rng {font-size: 6pt; color: #666;}
+
+.in-bar {display: grid; grid-template-columns: 75px 1fr; gap: 8px; margin-bottom: 4px; align-items: center;}
+.in-bar-lbl {font-size: 7.5pt; font-weight: bold; line-height: 1.1;}
+.in-bar-lbl span {display: block; font-weight: normal; font-size: 6pt; color: #666;}
+.in-bar-area {position: relative; display: flex; flex-direction: column;}
+.in-bar-scale {display: flex; justify-content: space-between; font-size: 6pt; color: #666; padding: 0 4px; margin-bottom: 1px;}
+.in-track {
+  height: 12px; background: #fff; position: relative;
+  display: flex; border: 1px solid #ccc; border-left:0; border-right:0; margin-right: 25px;
+}
+.in-track > div {height: 100%;}
+.in-t-low {flex: 1.5; background: #F0F0F0; border-right: 1px solid #fff;}
+.in-t-mid {flex: 1.5; background: #D9D9D9; border-right: 1px solid #fff;}
+.in-t-high {flex: 3; background: #F0F0F0;}
+.in-fill {
+  position: absolute; top: 2px; bottom: 2px; left: 0; background: #222;
+}
+.in-num {position: absolute; right: -28px; top: 0; font-size: 8.5pt; font-weight: bold; line-height: 12px;}
+
+.in-score {text-align: right; margin: 10px 0 20px;}
+.in-score .n {font-size: 36pt; font-weight: bold; letter-spacing: -0.04em; line-height: 0.85;}
+.in-score .u {font-size: 11pt; color: #444;}
+.in-score-desc {font-size: 6.5pt; color: #666; margin-top: 5px; text-align: right; line-height: 1.3;}
+
+.in-list {list-style: none; padding: 0; margin: 0 0 15px 0;}
+.in-list li {display: flex; justify-content: space-between; border-bottom: 1px dotted #aaa; padding: 4px 0; font-size: 7.5pt;}
+.in-list li .v {font-weight: bold;}
+
+.in-hist {width: 100%; border-collapse: collapse; font-size: 7pt; text-align: center; margin-top: 6px;}
+.in-hist th {font-weight: normal; color: #666; border-bottom: 1px solid #ccc; padding: 3px;}
+.in-hist td {padding: 4px 2px; border-bottom: 1px dotted #eee; font-weight: bold;}
+.in-hist td:first-child {text-align: left;}
+
+.in-foot {display: flex; justify-content: space-between; border-top: 1.5px solid var(--in-line); padding-top: 4px; font-size: 6.5pt; color: #555; margin-top: 15mm;}
+
+@media print{
+  body{background:#fff !important}
+  .stage-head,.stage,.report-tools{display:none !important}
+  .report-overlay{position:static;inset:auto;padding:0;background:none;overflow:visible;display:block !important}
+  .report{width:auto;min-height:0;margin:0;box-shadow:none;padding:8mm}
+  @page{size:A4 portrait;margin:6mm}
+}
+
+@media (max-width:520px){
+  .phone{transform:scale(.86);transform-origin:top center;margin-bottom:-120px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <img class="tb-amblem" src="logo-amblem.png" alt="Kaloritim">
+    <img class="tb-yazi" src="logo-yazi.png" alt="" aria-hidden="true">
+    <span class="tb-rule" aria-hidden="true"></span>
+    <span class="tb-desc">Akıllı beslenme matı</span>
+
+    <nav class="tb-actions" style="margin-left:auto">
+      <button type="button" class="tb-cta" id="btnReport">Analiz raporu</button>
+    </nav>
+  </div>
+</header>
+
+<main class="stage">
+  <div class="single" id="single">
+    <div class="phone" id="phone">
+      <div class="island" aria-hidden="true"></div>
+      <div class="screen">
+
+        <div class="statusbar">
+          <span class="sb-time">9:41</span>
+          <span class="sb-icons" aria-hidden="true">
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><path d="M8 10.5 5.9 8.2a3 3 0 0 1 4.2 0zM8 6.1a5.2 5.2 0 0 0-3.7 1.5L2.9 6.2a7.2 7.2 0 0 1 10.2 0l-1.4 1.4A5.2 5.2 0 0 0 8 6.1M8 2.1a9.2 9.2 0 0 0-6.5 2.7L.1 3.4a11.2 11.2 0 0 1 15.8 0l-1.4 1.4A9.2 9.2 0 0 0 8 2.1"/></svg>
+            <svg width="25" height="11" viewBox="0 0 25 11" fill="none"><rect x=".6" y=".6" width="20" height="9.8" rx="2.8" stroke="currentColor" opacity=".38"/><rect x="2.2" y="2.2" width="15.6" height="6.6" rx="1.6" fill="currentColor"/><path d="M22.3 4v3a1.9 1.9 0 0 0 0-3" fill="currentColor" opacity=".45"/></svg>
+          </span>
+        </div>
+
+        <div class="appbar">
+          <img class="ab-amblem" src="logo-amblem.png" alt="Kaloritim">
+          <img class="ab-yazi" src="logo-yazi.png" alt="" aria-hidden="true">
+          <div class="spacer"></div>
+          <div class="iconbtn" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-2 8-2 8h16s-2-1-2-8"/><path d="M10.5 20a2 2 0 0 0 3 0"/></svg>
+          </div>
+        </div>
+
+        <div class="views" id="views">
+          <!-- ekranlar JS ile basılır -->
+        </div>
+
+        <div class="tarayici hidden" id="tarayici"></div>
+        <div class="sheet-wrap hidden" id="sheet"></div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        <nav class="tabbar" id="tabbar" role="tablist" aria-label="Ana gezinme"></nav>
+        <div class="homebar" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+
+</main>
+
+<div class="report-overlay hidden" id="reportOverlay" role="dialog" aria-modal="true" aria-label="Klinik analiz raporu">
+  <div class="report-tools">
+    <span class="grow">Kaloritim klinik analiz raporu · A4</span>
+    <button type="button" class="btn primary" id="btnPrint">Yazdır / PDF olarak kaydet</button>
+    <button type="button" class="btn" id="btnCloseReport">Kapat</button>
+  </div>
+  <div id="reportSheet"></div>
+</div>
+
+<script>
+/* =========================================================================
+   VERİ — tümü buradan düzenlenir
+   ========================================================================= */
+/* =========================================================================
+   PROFİLLER
+   Uygulama birden çok hayvanı destekler: aynı mat, farklı ağırlık imzaları.
+   Her profil kendi ölçümlerini, uyarılarını ve zaman serilerini taşır.
+   ========================================================================= */
+
+/* Tohumlu sözde-rastgele üreteç: her açılışta aynı seriyi üretir,
+   ama düzenli bir zikzak değil, doğal görünen dalgalanma verir.        */
+function _rnd(tohum){
+  let s = tohum >>> 0;
+  return () => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; };
+}
+/* n noktalı seri: son değer bugünün gerçek ölçümü, geriye doğru eğim + dalga */
+function seri(n, sonDeger, donemDegisim, oynaklik, tohum, ondalik = 0){
+  const r = _rnd(tohum), a = [];
+  for(let i = 0; i < n; i++){
+    const t = i / (n - 1);
+    const temel = sonDeger - donemDegisim * (1 - t);
+    const dalga = (r() - 0.46) * oynaklik * (0.35 + r() * 1.3);
+    a.push(+(temel + dalga).toFixed(ondalik));
+  }
+  a[n - 1] = +(+sonDeger).toFixed(ondalik);
+  return a;
+}
+const HAFTA_ET = ["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"];
+const AY_ET    = ["1. hf","2. hf","3. hf","4. hf"];
+const YIL_ET   = ["Eyl","Eki","Kas","Ara","Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu"];
+
+/* Bir profilin üç zaman aralığını, güncel değerlerinden üretir */
+function seriKur(p, t){
+  const g = p, yon = g.egilim || {};
+  const kur = (n, et, k) => ({
+    etiket: et,
+    kilo:   seri(n, g.kilo,        (yon.kilo   || 0) * k, g.kilo * 0.02, t + n,      2),
+    mama:   seri(n, g.mamaAlinan,  (yon.mama   || 0) * k, g.mamaHedef * 0.22, t + n + 7),
+    su:     seri(n, g.suAlinan,    (yon.su     || 0) * k, g.suHedef * 0.18, t + n + 13),
+    kas:    seri(n, g.kas,         (yon.kas    || 0) * k, g.kas * 0.02, t + n + 19,  2),
+    yag:    seri(n, g.yag,         (yon.yag    || 0) * k, g.yag * 0.06, t + n + 23,  2),
+    kalori: seri(n, g.kaloriAlinan,(yon.kalori || 0) * k, g.kaloriHedef * 0.2, t + n + 29),
+    adim:   seri(n, g.adim,        (yon.adim   || 0) * k, g.adimHedef * 0.22, t + n + 31),
+    kalkma: seri(n, g.kalkma,      (yon.kalkma || 0) * k, g.kalkmaHedef * 0.2, t + n + 37),
+    yatma:  seri(n, g.yatma,       (yon.yatma  || 0) * k, 0.9, t + n + 41, 1)
+  });
+  return { hafta: kur(7, HAFTA_ET, 0.25), ay: kur(4, AY_ET, 1), yil: kur(12, YIL_ET, 3.2) };
+}
+
+const PROFILLER = [
+  /* ---------- 1) LUNA — sağlıklı yetişkin küçük ırk köpek ---------- */
+  {
+    id:"luna", tur:"kopek", foto:"luna.png",
+    pet:{
+      ad:"LUNA", irk:"Toy Poodle", yas:"2 yaş", cinsiyet:"Dişi",
+      cihaz:"Kaloritim Mat", senk:"14:32",
+      kilo:3.42, idealKilo:3.40, bmi:19.2, vsk:5, vskMax:9,
+      kaloriHedef:280, kaloriAlinan:266,
+      mamaHedef:65, mamaAlinan:62,
+      suHedef:180, suAlinan:176,
+      bmr:176, visseral:2, visseralMax:10,
+      adim:6250, adimHedef:6000,
+      kalkma:52, kalkmaHedef:50,
+      yatma:12.4, yatmaHedef:13.0,
+      kas:2.42, yag:0.55,
+      egilim:{kilo:0.02, mama:2, su:4, kas:0.03, yag:-0.02, kalori:8, adim:180, kalkma:2, yatma:-0.2}
+    },
+    vucut:{ kas:2.42, kasIdeal:[2.20,2.60], yag:0.55, yagIdeal:[0.40,0.70],
+            suOran:60.2, suOranIdeal:[55,65], yagOran:16.1, yagOranIdeal:[12,20] },
+    sivi:{ icw:1.31, ecw:0.75 },
+    bolgesel:[
+      {ad:"Sol ön bacak",   kg:0.22, pct:99},
+      {ad:"Sağ ön bacak",   kg:0.22, pct:100},
+      {ad:"Gövde",          kg:1.70, pct:102},
+      {ad:"Sol arka bacak", kg:0.28, pct:98},
+      {ad:"Sağ arka bacak", kg:0.28, pct:99}
+    ],
+    basinc:[
+      {ad:"Sol ön",   pct:30, ideal:[28,32]},
+      {ad:"Sağ ön",   pct:31, ideal:[28,32]},
+      {ad:"Sol arka", pct:20, ideal:[18,22]},
+      {ad:"Sağ arka", pct:19, ideal:[18,22]}
+    ],
+    mama:"Poodle Adult",
+    uyarilar:[
+      {tip:"ok",   baslik:"Tüm değerler normal", metin:"Ağırlık, vücut kompozisyonu ve sıvı dengesi ideal aralıkta. Takip gerektiren bulgu yok.", zaman:"Bugün 09:10"},
+      {tip:"ok",   baslik:"Beslenme hedefinde", metin:"Bugün 62 g mama ve 176 ml su tüketildi; ikisi de hedefin %95'i üzerinde.", zaman:"Bugün 08:40"},
+      {tip:"ok",   baslik:"Hareket hedefi aşıldı", metin:"6.250 adım (hedef 6.000) ve 52 oturup kalkma kaydedildi.", zaman:"Bugün 07:30"},
+      {tip:"info", baslik:"Kilo sabit seyrediyor", metin:"Son 30 günde değişim 20 g. İdeal kiloya uzaklık %0,6.", zaman:"Dün 21:10"},
+      {tip:"ok",   baslik:"Yük dağılımı dengeli", metin:"Dört patiye düşen yük simetrik; topallık bulgusu yok.", zaman:"12 Ağu"},
+      {tip:"ok",   baslik:"Mat kalibrasyonu tamamlandı", metin:"Üç tartı da sıfırlandı. Ölçüm hassasiyeti ±2 g.", zaman:"10 Ağu"}
+    ]
+  },
+
+  /* ---------- 2) REİS — kronik böbrek hastalığı, evre 2 ---------- */
+  {
+    id:"reis", tur:"kopek", foto:"kopek2.jpg",
+    pet:{
+      ad:"REİS", irk:"Amerikan Pitbull Terrier", yas:"9 yaş", cinsiyet:"Erkek · Kısırlaştırılmış",
+      cihaz:"Kaloritim Mat", senk:"14:28",
+      kilo:24.60, idealKilo:27.50, bmi:26.4, vsk:3, vskMax:9,
+      kaloriHedef:1080, kaloriAlinan:792,
+      mamaHedef:270, mamaAlinan:197,
+      suHedef:1230, suAlinan:1620,
+      bmr:773, visseral:3, visseralMax:10,
+      adim:3400, adimHedef:6800,
+      kalkma:24, kalkmaHedef:45,
+      yatma:15.2, yatmaHedef:13.5,
+      kas:15.20, yag:3.45,
+      egilim:{kilo:-1.9, mama:-60, su:380, kas:-0.95, yag:-0.25, kalori:-240, adim:-1400, kalkma:-12, yatma:1.4}
+    },
+    vucut:{ kas:15.20, kasIdeal:[16.40,19.20], yag:3.45, yagIdeal:[3.30,5.20],
+            suOran:63.5, suOranIdeal:[55,65], yagOran:14.0, yagOranIdeal:[12,20] },
+    sivi:{ icw:9.39, ecw:6.23 },
+    bolgesel:[
+      {ad:"Sol ön bacak",   kg:1.35, pct:89},
+      {ad:"Sağ ön bacak",   kg:1.37, pct:90},
+      {ad:"Gövde",          kg:9.80, pct:92},
+      {ad:"Sol arka bacak", kg:1.52, pct:84},
+      {ad:"Sağ arka bacak", kg:1.50, pct:83}
+    ],
+    basinc:[
+      {ad:"Sol ön",   pct:31, ideal:[28,32]},
+      {ad:"Sağ ön",   pct:30, ideal:[28,32]},
+      {ad:"Sol arka", pct:20, ideal:[18,22]},
+      {ad:"Sağ arka", pct:19, ideal:[18,22]}
+    ],
+    mama:"Veteriner Diyet Renal",
+    uyarilar:[
+      {tip:"crit", baslik:"Su tüketimi çok yüksek", metin:"Bugün 1.620 ml içildi, hedef 1.230 ml (%132). Aşırı su tüketimi böbrek hastalığında takip edilmesi gereken bulgudur.", zaman:"Bugün 14:10"},
+      {tip:"crit", baslik:"Hücre dışı sıvı oranı yüksek", metin:"ECW/TBW 0,399 — normal üst sınır 0,390. Sıvı dengesi bozulmuş olabilir, veteriner değerlendirmesi önerilir.", zaman:"Bugün 09:20"},
+      {tip:"warn", baslik:"İştah düşük", metin:"Bugün 197 g yendi, hedef 270 g (%73). Böbrek diyetlerinde iştahsızlık sık görülür.", zaman:"Bugün 09:15"},
+      {tip:"warn", baslik:"Kas kütlesi azalıyor", metin:"Son 12 ayda 950 g yağsız doku kaybı. Arka bacaklarda oran %83–84'e indi.", zaman:"Bugün 08:00"},
+      {tip:"warn", baslik:"Kilo kaybı sürüyor", metin:"Mevcut 24,60 kg, ideal 27,50 kg — %10,5 altında. Son 30 günde 1,9 kg kayıp.", zaman:"Dün 21:00"},
+      {tip:"warn", baslik:"Hareketsizlik", metin:"Yatma süresi 15 sa 12 dk, adım sayısı hedefin %50'si.", zaman:"Dün 20:30"},
+      {tip:"ok",   baslik:"Diyet uyumu iyi", metin:"Veteriner Diyet Renal 14 gündür kesintisiz kullanılıyor.", zaman:"11 Ağu"}
+    ]
+  },
+
+  /* ---------- 3) TÜLAY — kedi, kısırlaştırılmış, hafif kilolu ---------- */
+  {
+    id:"tulay", tur:"kedi", foto:"tulay.jpg",
+    pet:{
+      ad:"TÜLAY", irk:"Melez · Tuxedo", yas:"4 yaş", cinsiyet:"Dişi · Kısırlaştırılmış",
+      cihaz:"Kaloritim Mat", senk:"13:55",
+      kilo:4.85, idealKilo:4.30, bmi:23.8, vsk:6, vskMax:9,
+      kaloriHedef:210, kaloriAlinan:186,
+      mamaHedef:55, mamaAlinan:48,
+      suHedef:240, suAlinan:196,
+      bmr:209, visseral:5, visseralMax:10,
+      adim:2450, adimHedef:3000,
+      kalkma:34, kalkmaHedef:40,
+      yatma:16.4, yatmaHedef:16.0,
+      kas:3.05, yag:1.12,
+      egilim:{kilo:0.18, mama:-3, su:-14, kas:-0.04, yag:0.14, kalori:-8, adim:-260, kalkma:-4, yatma:0.5}
+    },
+    vucut:{ kas:3.05, kasIdeal:[2.95,3.45], yag:1.12, yagIdeal:[0.65,1.05],
+            suOran:57.4, suOranIdeal:[54,64], yagOran:23.1, yagOranIdeal:[15,25] },
+    sivi:{ icw:1.72, ecw:1.06 },
+    bolgesel:[
+      {ad:"Sol ön bacak",   kg:0.29, pct:101},
+      {ad:"Sağ ön bacak",   kg:0.29, pct:100},
+      {ad:"Gövde",          kg:2.16, pct:105},
+      {ad:"Sol arka bacak", kg:0.36, pct:97},
+      {ad:"Sağ arka bacak", kg:0.35, pct:96}
+    ],
+    basinc:[
+      {ad:"Sol ön",   pct:29, ideal:[27,31]},
+      {ad:"Sağ ön",   pct:30, ideal:[27,31]},
+      {ad:"Sol arka", pct:21, ideal:[19,23]},
+      {ad:"Sağ arka", pct:20, ideal:[19,23]}
+    ],
+    mama:"Sterilised 37",
+    uyarilar:[
+      {tip:"warn", baslik:"Kilo ideal aralığın üzerinde", metin:"Mevcut 4,85 kg, ideal 4,30 kg — %12,8 fazla. Kısırlaştırılmış kedilerde sık görülür.", zaman:"Bugün 10:05"},
+      {tip:"warn", baslik:"Vücut yağ oranı sınırda", metin:"%23,1 — normal üst sınır %25'e yaklaşıyor. Viseral yağ seviyesi 5/10.", zaman:"Bugün 09:30"},
+      {tip:"warn", baslik:"Su tüketimi düşük", metin:"Bugün 196 ml içildi, hedef 240 ml. Kedilerde kuru mama ağırlıklı beslenmede yaygındır.", zaman:"Bugün 08:50"},
+      {tip:"info", baslik:"Hareket hedefin altında", metin:"2.450 adım (hedef 3.000). Oyun süresi artırılması önerilir.", zaman:"Dün 22:00"},
+      {tip:"ok",   baslik:"Kas kütlesi korunuyor", metin:"3,05 kg — normal aralıkta. Kilo artışı yağ dokusundan kaynaklanıyor.", zaman:"12 Ağu"},
+      {tip:"ok",   baslik:"Yük dağılımı dengeli", metin:"Dört patiye düşen yük simetrik.", zaman:"11 Ağu"}
+    ]
+  },
+
+  /* ---------- 4) MAYA — büyüme çağında yavru köpek ---------- */
+  {
+    id:"maya", tur:"kopek", foto:"",
+    pet:{
+      ad:"MAYA", irk:"Golden Retriever", yas:"5 aylık", cinsiyet:"Dişi",
+      cihaz:"Kaloritim Mat", senk:"14:05",
+      kilo:18.60, idealKilo:19.20, bmi:20.4, vsk:5, vskMax:9,
+      kaloriHedef:1420, kaloriAlinan:1368,
+      mamaHedef:345, mamaAlinan:332,
+      suHedef:930, suAlinan:905,
+      bmr:628, visseral:2, visseralMax:10,
+      adim:9800, adimHedef:9000,
+      kalkma:74, kalkmaHedef:60,
+      yatma:14.6, yatmaHedef:15.0,
+      kas:13.10, yag:2.42,
+      egilim:{kilo:2.40, mama:42, su:110, kas:1.85, yag:0.22, kalori:170, adim:900, kalkma:8, yatma:-0.6}
+    },
+    vucut:{ kas:13.10, kasIdeal:[12.40,14.20], yag:2.42, yagIdeal:[1.90,3.10],
+            suOran:64.8, suOranIdeal:[58,68], yagOran:13.0, yagOranIdeal:[10,18] },
+    sivi:{ icw:7.62, ecw:4.43 },
+    bolgesel:[
+      {ad:"Sol ön bacak",   kg:1.28, pct:103},
+      {ad:"Sağ ön bacak",   kg:1.29, pct:104},
+      {ad:"Gövde",          kg:8.10, pct:101},
+      {ad:"Sol arka bacak", kg:1.42, pct:102},
+      {ad:"Sağ arka bacak", kg:1.41, pct:101}
+    ],
+    basinc:[
+      {ad:"Sol ön",   pct:31, ideal:[28,32]},
+      {ad:"Sağ ön",   pct:30, ideal:[28,32]},
+      {ad:"Sol arka", pct:20, ideal:[18,22]},
+      {ad:"Sağ arka", pct:19, ideal:[18,22]}
+    ],
+    mama:"Maxi Puppy",
+    uyarilar:[
+      {tip:"ok",   baslik:"Büyüme eğrisi normal", metin:"Son 30 günde 2,4 kg alındı; ırk ve yaş için beklenen aralıkta.", zaman:"Bugün 09:00"},
+      {tip:"ok",   baslik:"Kas gelişimi güçlü", metin:"Yağsız doku 12 ayda 1,85 kg arttı, yağ oranı %13 ile ideal.", zaman:"Bugün 08:30"},
+      {tip:"info", baslik:"Öğün sayısı yaşa göre ayarlandı", metin:"Yavru dönemde günlük 345 g, 3 öğüne bölünerek veriliyor.", zaman:"Dün 19:00"},
+      {tip:"ok",   baslik:"Hareket hedefi aşıldı", metin:"9.800 adım ve 74 oturup kalkma — yavru için beklenen aktivite düzeyi.", zaman:"Dün 20:15"},
+      {tip:"info", baslik:"Sonraki tartım hatırlatması", metin:"Büyüme takibi için haftalık ölçüm önerilir.", zaman:"12 Ağu"}
+    ]
+  }
+];
+
+const TUR_AD = {kopek:"Köpek", kedi:"Kedi"};
+
+/* Aktif profil — bu değişkenler profil değişince yeniden bağlanır */
+let aktifProfil = 0;
+let PET, VUCUT, SIVI, BOLGESEL, BASINC, DATA, UYARILAR;
+
+function profilBagla(i){
+  aktifProfil = Math.max(0, Math.min(PROFILLER.length - 1, i));
+  const p = PROFILLER[aktifProfil];
+  PET = p.pet; VUCUT = p.vucut; SIVI = p.sivi;
+  BOLGESEL = p.bolgesel; BASINC = p.basinc; UYARILAR = p.uyarilar;
+  DATA = p._data || (p._data = seriKur(p.pet, 100 + aktifProfil * 17));
+  if(typeof AYAR !== "undefined" && p.mama) AYAR.mama = p.mama;
+}
+
+/* Uyarı eşikleri */
+const ESIKLER = [
+  {ad:"Az yedi uyarısı",         aciklama:"Günlük hedefin %85'inin altı",     acik:true},
+  {ad:"Fazla yedi uyarısı",      aciklama:"Günlük hedefin %115'inin üstü",    acik:true},
+  {ad:"Su tüketimi uyarısı",     aciklama:"Arka arkaya 2 gün hedefin altı",   acik:true},
+  {ad:"Ani kilo değişimi",       aciklama:"7 günde %3'ten fazla değişim",     acik:true},
+  {ad:"Hareketsizlik uyarısı",   aciklama:"Yatma süresi 14 saati aşarsa",     acik:true},
+  {ad:"Veterinere otomatik rapor", aciklama:"Kritik uyarıda özet gönder",     acik:false}
+];
+
+/* Royal Canin mama kataloğu — kcal/g ile birlikte */
+const MAMALAR = [
+  {ad:"Poodle Adult",            kisa:"Poodle",   kcal:3.73, not:"Irka özel · 10 ay ve üzeri"},
+  {ad:"Mini Light Weight Care",  kisa:"Light",    kcal:3.20, not:"Kilo kontrolü · küçük ırk"},
+  {ad:"Mini Sterilised",         kisa:"Steril",   kcal:3.45, not:"Kısırlaştırılmış küçük ırk"},
+  {ad:"X-Small Adult",           kisa:"X-Small",  kcal:3.95, not:"4 kg altı yetişkin"},
+  {ad:"VD Satiety Small Dog",    kisa:"Satiety",  kcal:3.05, not:"Veteriner diyet · tokluk"},
+  {ad:"Veteriner Diyet Renal",   kisa:"Renal",    kcal:4.02, not:"Böbrek desteği · veteriner diyet"},
+  {ad:"Maxi Puppy",              kisa:"Puppy",    kcal:4.12, not:"Büyük ırk yavru · 2–15 ay"},
+  {ad:"Sterilised 37",           kisa:"Steril",   kcal:3.85, not:"Kısırlaştırılmış kedi", kedi:true},
+  {ad:"Kitten",                  kisa:"Kitten",   kcal:4.08, not:"Yavru kedi · 4–12 ay", kedi:true}
+];
+
+/* Barkod veritabanı — okunan kod burada varsa ürün doğrudan eklenir.
+   318255… ile başlayan kodlar Royal Canin'e aittir (GS1 firma öneki).
+   YENİ ÜRÜN EKLEMEK İÇİN: kodu okutun, uygulama size kodu gösterir,
+   buraya ad ve kcal/g ile birlikte yazın.                                */
+const BARKODLAR = {
+  /* Buradaki kayıtlar anında eklenir — kcal/g değerleri paketten okunup doğrulanmıştır.
+     Açık veritabanı ürün adını verir ama kalori değerini çoğu zaman vermez;
+     hesaplama buna bağlı olduğu için doğrulanmış değerleri burada tutuyoruz.       */
+  /* "3182551063622": {ad:"Skin&Coat Chews", kcal:?, not:"Ödül · 240 g"},  ← kcal/g bekleniyor */
+};
+/* Royal Canin GS1 firma önekleri — katalogdaki 257 barkoddan çıkarıldı:
+   318255 (Fransa tesisi, 195 kayıt) ve 900357 (Avusturya tesisi, 62 kayıt) */
+const RC_ONEK = ["318255","900357"];
+
+/* Kullanıcı ayarları — mockup boyunca canlı olarak değişir */
+const AYAR = {
+  mama:PROFILLER[0].mama,
+  parlaklik:"Orta",
+  gece:true,
+  olcum:"Otomatik",
+  vet:true,
+  vetSik:"Haftalık",
+  program:"12 hafta",
+  kalibreDurum:"3 tartı da kalibre · ±2 g",
+  bildirim:[
+    {ad:"Öğün hatırlatması", aciklama:"08:00 · 12:30 · 19:00", acik:true},
+    {ad:"Az yedi / az su içti", aciklama:"Eşik aşıldığında anında", acik:true},
+    {ad:"Haftalık özet", aciklama:"Pazar 20:00", acik:true},
+    {ad:"Hareketsizlik", aciklama:"Yatma süresi eşiği aşılınca", acik:true},
+    {ad:"Mat pili düşük", aciklama:"%15 altına inince", acik:true},
+    {ad:"Veterinere otomatik rapor", aciklama:"Kritik uyarıda özet gönder", acik:false}
+  ]
+};
+
+/* =========================================================================
+   YARDIMCILAR
+   ========================================================================= */
+const el = (h)=>{const t=document.createElement("template");t.innerHTML=h.trim();return t.content.firstElementChild;};
+const nf = (v,d=0)=>v.toLocaleString("tr-TR",{minimumFractionDigits:d,maximumFractionDigits:d});
+
+/* mama durumunu renge çevirir: sarı = azalan, yeşil = normal, kırmızı = fazla */
+function mamaDurum(alinan,hedef){
+  const o = alinan/hedef;
+  if(o > 1.15) return {ad:"FAZLA TÜKETİM", renk:"var(--crit)", sinif:"crit", aciklama:"Hedefin üzerinde. Kap kırmızı yanıyor."};
+  if(o < 0.85) return {ad:"AZALAN İŞTAH", renk:"var(--warn)", sinif:"warn", aciklama:"Hedefin altında. Kap sarı yanıyor."};
+  return {ad:"NORMAL", renk:"var(--ok)", sinif:"ok", aciklama:"Hedef aralığında. Kap yeşil yanıyor."};
+}
+
+/* ---- seçenek grubu: ["deger"] veya [["deger","etiket"]] ---- */
+function optGroup(name, opts, cur){
+  return `<div class="segctl" style="grid-template-columns:repeat(${opts.length},1fr)" data-opt="${name}">
+    ${opts.map(o=>{
+      const v = Array.isArray(o)?o[0]:o, l = Array.isArray(o)?o[1]:o;
+      return `<button type="button" data-v="${v}" aria-pressed="${v===cur}">${l}</button>`;
+    }).join("")}
+  </div>`;
+}
+/* ---- aç/kapa anahtarı ---- */
+function swHtml(key,on){
+  return `<button type="button" class="sw${on?" on":""}" data-sw="${key}" role="switch" aria-checked="${on}" aria-label="Aç veya kapat"><i></i></button>`;
+}
+
+/* ---- noktaları yumuşak eğriyle bağlar (Catmull-Rom → kübik Bézier) ----
+   t: gerginlik. Küçük değer daha sıkı, büyük değer daha yayvan eğri verir;
+   0.20 civarı, veriyi aşırı taşırmadan köşeleri yuvarlar.                 */
+function smoothPath(pts, t){
+  t = t || 0.20;
+  if(pts.length < 3) return pts.map((p,i)=>`${i?"L":"M"}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(" ");
+  let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+  for(let i=0; i<pts.length-1; i++){
+    const p0 = pts[i-1] || pts[i], p1 = pts[i], p2 = pts[i+1], p3 = pts[i+2] || p2;
+    const c1x = p1[0] + (p2[0]-p0[0])*t, c1y = p1[1] + (p2[1]-p0[1])*t;
+    const c2x = p2[0] - (p3[0]-p1[0])*t, c2y = p2[1] - (p3[1]-p1[1])*t;
+    d += ` C${c1x.toFixed(1)} ${c1y.toFixed(1)} ${c2x.toFixed(1)} ${c2y.toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+  }
+  return d;
+}
+
+/* ---- çizgi/alan grafiği ---- */
+function lineChart(vals, labels, opt={}){
+  const n = vals.length;
+  /* nokta üstü değer etiketi: kalabalık olmasın diye 8 noktaya kadar */
+  const etiketli = opt.etiketli !== undefined ? opt.etiketli : n <= 8;
+  const ond = opt.ond !== undefined ? opt.ond : 0;
+  const W=326, H=opt.h||(etiketli?146:132), pl=14, pr=14, pt=etiketli?24:12, pb=20;
+  const min = opt.min !== undefined ? opt.min : Math.min(...vals);
+  const max = opt.max !== undefined ? opt.max : Math.max(...vals);
+  const lo = min - (max-min)*0.35 - 0.0001, hi = max + (max-min)*0.35 + 0.0001;
+  const x = i => pl + i*(W-pl-pr)/(n-1);
+  const y = v => (H-pb) - ((v-lo)/(hi-lo))*(H-pb-pt);
+  const c = opt.color || "var(--a-red)";
+  let line = smoothPath(vals.map((v,i)=>[x(i), y(v)]));
+  let area = line + ` L${x(n-1).toFixed(1)} ${H-pb} L${x(0).toFixed(1)} ${H-pb} Z`;
+  const gid = "g"+Math.random().toString(36).slice(2,8);
+  let grid="";
+  for(let k=0;k<=2;k++){ const gy = pt + k*(H-pb-pt)/2; grid += `<line x1="${pl-8}" y1="${gy}" x2="${W-pr+8}" y2="${gy}" stroke="var(--a-line)" stroke-width="1"/>`; }
+  /* her ölçümde işaretçi; sonuncusu dolu ve halkalı */
+  let noktalar = vals.map((v,i)=>{
+    const son = i===n-1;
+    return son
+      ? `<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="7" fill="${c}" opacity=".18"/>
+         <circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="3.8" fill="${c}"/>`
+      : `<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="3" fill="var(--a-surf)" stroke="${c}" stroke-width="1.7"/>`;
+  }).join("");
+  let degerler = etiketli ? vals.map((v,i)=>
+    `<text x="${x(i).toFixed(1)}" y="${(y(v)-9).toFixed(1)}" font-size="8.5" font-weight="600"
+       fill="${i===n-1?c:"var(--a-ink-2)"}" text-anchor="middle"
+       font-family="var(--num)" style="font-variant-numeric:lining-nums tabular-nums">${nf(v,ond)}</text>`).join("") : "";
+  let ticks = labels.map((l,i)=> (n>8 && i%2) ? "" :
+    `<text x="${x(i).toFixed(1)}" y="${H-5}" font-size="8.5" fill="var(--a-ink-3)" text-anchor="middle" font-family="var(--num)">${l}</text>`).join("");
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${opt.aria||"grafik"}">
+    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${c}" stop-opacity=".22"/><stop offset="100%" stop-color="${c}" stop-opacity="0"/>
+    </linearGradient></defs>
+    ${grid}
+    <path d="${area}" fill="url(#${gid})"/>
+    <path d="${line}" fill="none" stroke="${c}" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"/>
+    ${noktalar}
+    ${degerler}
+    ${ticks}
+  </svg>`;
+}
+
+/* ---- iki çizgili grafik (kas / yağ) ---- */
+function dualChart(a, b, labels){
+  const W=326,H=132,pl=14,pr=14,pt=12,pb=20;   /* kenar boşlukları lineChart ile aynı */
+  const all=[...a,...b], lo=Math.min(...all)*0.92, hi=Math.max(...all)*1.06, n=a.length;
+  const x=i=>pl+i*(W-pl-pr)/(n-1), y=v=>(H-pb)-((v-lo)/(hi-lo))*(H-pb-pt);
+  const p=(arr)=>smoothPath(arr.map((v,i)=>[x(i), y(v)]));
+  let ticks = labels.map((l,i)=> (n>8 && i%2) ? "" :
+    `<text x="${x(i).toFixed(1)}" y="${H-5}" font-size="8.5" fill="var(--a-ink-3)" text-anchor="middle" font-family="var(--num)">${l}</text>`).join("");
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Kas ve yağ kütlesi değişimi">
+    <line x1="${pl}" y1="${pt}" x2="${W-pr}" y2="${pt}" stroke="var(--a-line)"/>
+    <line x1="${pl}" y1="${(pt+H-pb)/2}" x2="${W-pr}" y2="${(pt+H-pb)/2}" stroke="var(--a-line)"/>
+    <line x1="${pl}" y1="${H-pb}" x2="${W-pr}" y2="${H-pb}" stroke="var(--a-line)"/>
+    <path d="${p(a)}" fill="none" stroke="var(--ok)" stroke-width="1.9" stroke-linejoin="round"/>
+    <path d="${p(b)}" fill="none" stroke="var(--warn)" stroke-width="1.9" stroke-linejoin="round" stroke-dasharray="5 4"/>
+    ${a.map((v,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="2.6" fill="var(--a-surf)" stroke="var(--ok)" stroke-width="1.5"/>`).join("")}
+    ${b.map((v,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="2.6" fill="var(--a-surf)" stroke="var(--warn)" stroke-width="1.5"/>`).join("")}
+    <circle cx="${x(n-1).toFixed(1)}" cy="${y(a[n-1]).toFixed(1)}" r="3.8" fill="var(--ok)"/>
+    <circle cx="${x(n-1).toFixed(1)}" cy="${y(b[n-1]).toFixed(1)}" r="3.8" fill="var(--warn)"/>
+    ${ticks}
+  </svg>`;
+}
+
+/* ---- sütun grafiği: hedefe göre renklenir ---- */
+function barChart(vals, labels, hedef, unit){
+  const W=326,H=132,pl=6,pr=6,pt=14,pb=20, n=vals.length;
+  const hi = Math.max(...vals, hedef)*1.14;
+  const bw = Math.min(26,(W-pl-pr)/n - 6);
+  const x = i => pl + i*(W-pl-pr)/n + ((W-pl-pr)/n - bw)/2;
+  const y = v => (H-pb) - (v/hi)*(H-pb-pt);
+  const col = v => v/hedef>1.15 ? "var(--crit)" : (v/hedef<0.85 ? "var(--warn)" : "var(--ok)");
+  const hy = y(hedef);
+  let bars = vals.map((v,i)=>
+    `<rect x="${x(i).toFixed(1)}" y="${y(v).toFixed(1)}" width="${bw.toFixed(1)}" height="${(H-pb-y(v)).toFixed(1)}" rx="3.5" fill="${col(v)}"/>`).join("");
+  let ticks = labels.map((l,i)=> (n>8 && i%2) ? "" :
+    `<text x="${(x(i)+bw/2).toFixed(1)}" y="${H-5}" font-size="8.5" fill="var(--a-ink-3)" text-anchor="middle" font-family="var(--num)">${l}</text>`).join("");
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Günlük tüketim, hedefe göre renklendirilmiş">
+    <line x1="${pl}" y1="${H-pb}" x2="${W-pr}" y2="${H-pb}" stroke="var(--a-line)"/>
+    <line x1="${pl}" y1="${hy.toFixed(1)}" x2="${W-pr}" y2="${hy.toFixed(1)}" stroke="var(--a-ink-3)" stroke-width="1" stroke-dasharray="4 4" opacity=".7"/>
+    <text x="${W-pr}" y="${(hy-5).toFixed(1)}" font-size="8.5" fill="var(--a-ink-3)" text-anchor="end" font-family="var(--num)">hedef ${hedef} ${unit}</text>
+    ${bars}${ticks}
+  </svg>`;
+}
+
+/* ---- halka gösterge ---- */
+function ring(val, hedef, unit, cap, color){
+  const r=40, c=2*Math.PI*r, p=Math.min(val/hedef,1);
+  return `<div class="ring">
+    <div class="wrap">
+      <svg width="96" height="96" viewBox="0 0 96 96">
+        <circle cx="48" cy="48" r="${r}" fill="none" stroke="var(--a-surf-3)" stroke-width="9"/>
+        <circle cx="48" cy="48" r="${r}" fill="none" stroke="${color}" stroke-width="9" stroke-linecap="round"
+                stroke-dasharray="${(c*p).toFixed(1)} ${c.toFixed(1)}"/>
+      </svg>
+      <div class="val"><div class="n">${nf(val)}</div><div class="u">${unit}</div></div>
+    </div>
+    <div class="cap">${cap}</div>
+    <div class="amount">${Math.round(val/hedef*100)}% · hedef ${hedef} ${unit}</div>
+  </div>`;
+}
+
+/* ---- mat + kase görseli, duruma göre renkli ---- */
+function bowlViz(color){
+  return `<svg class="viz" viewBox="0 0 130 96" role="img" aria-label="Mama kabı durum ışığı">
+    <ellipse cx="65" cy="78" rx="58" ry="13" fill="var(--a-surf-3)"/>
+    <rect x="18" y="52" width="94" height="26" rx="9" fill="#E9E5E7"/>
+    <rect x="18" y="52" width="94" height="26" rx="9" fill="none" stroke="#D9D2D5"/>
+    <rect x="30" y="66" width="70" height="9" rx="4.5" fill="${color}" opacity=".95"/>
+    <ellipse cx="65" cy="70" rx="46" ry="11" fill="${color}" opacity=".16"/>
+    <path d="M34 46h62a0 0 0 0 1 0 0 8 8 0 0 1-8 8H42a8 8 0 0 1-8-8" fill="#F1EDEE"/>
+    <ellipse cx="65" cy="44" rx="32" ry="10" fill="#FBF9FA" stroke="#E2DBDD"/>
+    <ellipse cx="65" cy="44" rx="22" ry="6" fill="#EFEAEB"/>
+    <rect x="41" y="46" width="5" height="12" rx="2.5" fill="#EDE8EA"/>
+    <rect x="84" y="46" width="5" height="12" rx="2.5" fill="#EDE8EA"/>
+  </svg>`;
+}
+
+/* ---- köpek silueti + bölgesel noktalar ---- */
+function dogViz(){
+  const kedi = PROFILLER[aktifProfil].tur === "kedi";
+  /* siluet ve işaret konumları türe göre değişir (görsellerin anatomisi farklı) */
+  const g = kedi
+    ? {src:"siluet-kedi.png", en:340, boy:244, sinif:" kedi",
+       n:[[66,73],[78,73],[47,49],[32,73],[22,73]]}
+    : {src:"siluet.png",      en:325, boy:263, sinif:"",
+       n:[[68.5,72],[78,72],[50,37],[31,72],[21.5,72]]};
+  const pt=(l,t,v)=>{
+    const renk = v>=95 ? "var(--ok)" : (v>=90 ? "var(--warn)" : "var(--crit)");
+    return `<span class="siluet-pt" style="left:${l}%;top:${t}%;background:${renk}">${v}</span>`;
+  };
+  return `<div class="siluet${g.sinif}" style="aspect-ratio:${g.en}/${g.boy}"
+               role="img" aria-label="Bölgesel yağsız doku dağılımı">
+    <img src="${g.src}" alt="">
+    <span class="siluet-zemin" aria-hidden="true"></span>
+    ${g.n.map((k,i)=>pt(k[0],k[1],BOLGESEL[i].pct)).join("")}
+  </div>`;
+}
+
+/* =========================================================================
+   EKRANLAR
+   ========================================================================= */
+profilBagla(0);   /* ilk profil yüklenir: PET, VUCUT, DATA … bağlanır */
+
+const durumHesapla = () => mamaDurum(PET.mamaAlinan, PET.mamaHedef);
+
+/* obezite derecesi — ideal kiloya göre fazlalık yüzdesi */
+function obezite(kilo, ideal){
+  const f = (kilo-ideal)/ideal*100;
+  if(f >= 30)  return {ad:"İleri obez",   derece:"Derece 3", sinif:"crit", renk:"var(--crit)", yuzde:f};
+  if(f >= 15)  return {ad:"Obez",         derece:"Derece 2", sinif:"crit", renk:"var(--crit)", yuzde:f};
+  if(f >= 5)   return {ad:"Fazla kilolu", derece:"Derece 1", sinif:"warn", renk:"var(--warn)", yuzde:f};
+  if(f <= -10) return {ad:"Zayıf",        derece:"",         sinif:"warn", renk:"var(--warn)", yuzde:f};
+  return {ad:"İdeal kilo", derece:"", sinif:"ok", renk:"var(--ok)", yuzde:f};
+}
+/* 14.3 → "14 sa 18 dk" */
+const saatFmt = h => `${Math.floor(h)} sa ${Math.round((h%1)*60)} dk`;
+/* seçili mamanın kaydı */
+const mamaKaydi = () => MAMALAR.find(m=>m.ad===AYAR.mama) || MAMALAR[0];
+
+/* pakette okunan besin değerlerinin kısa özeti */
+function besinOzet(m){
+  const b = m && m.besin;
+  if(!b) return "";
+  const p = [];
+  if(b.protein) p.push("protein %"+nf(b.protein,1));
+  if(b.yag)     p.push("yağ %"+nf(b.yag,1));
+  if(b.kul)     p.push("kül %"+nf(b.kul,1));
+  if(b.lif)     p.push("lif %"+nf(b.lif,1));
+  if(b.nem)     p.push("nem %"+nf(b.nem,1));
+  return p.length ? " · " + p.join(" · ") : "";
+}
+
+/* ---------- 1) GENEL BAKIŞ ---------- */
+function viewGenel(){
+  const durum = durumHesapla();
+  const ob = obezite(PET.kilo, PET.idealKilo);
+  const obSeviye = ob.sinif==="ok" ? 1 : (ob.derece==="Derece 1" ? 2 : (ob.derece==="Derece 2" ? 3 : 4));
+  const mk = mamaKaydi();
+  const hd = DATA.hafta, kiloDelta = (hd.kilo[hd.kilo.length-1]-hd.kilo[0])*1000;
+  return `
+  <button type="button" class="pet" data-act="profilSec">
+    <span class="avatar" aria-hidden="true">
+      ${PROFILLER[aktifProfil].foto
+        ? `<img src="${PROFILLER[aktifProfil].foto}" alt="">`
+        : `<span class="bas-harf">${PET.ad.charAt(0)}</span>`}
+    </span>
+    <span class="pet-bilgi">
+      <span class="ad">${PET.ad}</span>
+      <span class="meta">${PET.yas} · ${PET.irk}</span>
+      <span class="sync"><i class="dot"></i> ${PET.cihaz} · ${PET.senk}'de senkronize</span>
+    </span>
+    <span class="pet-degis" aria-label="Profil değiştir">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 7h11M8 7l3-3M8 7l3 3"/><path d="M16 17H5m11 0-3-3m3 3-3 3"/>
+      </svg>
+    </span>
+  </button>
+
+  <div class="sect">Klinik özet</div>
+  <div class="grid2">
+    <div class="metric">
+      <div class="lbl">Güncel ağırlık</div>
+      <div><span class="num big">${nf(PET.kilo,2)}</span><span class="unit">kg</span></div>
+      <div class="track ${ob.sinif==="ok"?"g":"y"}"><b style="width:${Math.min(PET.idealKilo/PET.kilo*100,100).toFixed(0)}%"></b></div>
+      <div class="foot">İdeal ${nf(PET.idealKilo,2)} kg</div>
+    </div>
+    <div class="metric">
+      <div class="lbl">Obezite derecesi</div>
+      <div><span class="num big" style="font-size:19px;color:${ob.renk}">${ob.ad}</span></div>
+      <div class="scale" style="color:${ob.renk}">${[1,2,3,4].map(i=>`<i class="${i<=obSeviye?"on":""}"></i>`).join("")}</div>
+      <div class="foot" style="color:${ob.renk};font-weight:600">${ob.derece ? ob.derece+" · " : ""}ideal kilonun %${nf(Math.abs(ob.yuzde),1)} ${ob.yuzde>=0?"üzerinde":"altında"}</div>
+    </div>
+    <div class="metric">
+      <div class="lbl">Vücut Kondisyon Skoru</div>
+      <div><span class="num big">${PET.vsk}</span><span class="unit">/ ${PET.vskMax}</span></div>
+      <div class="scale" style="color:${ob.renk}">${Array.from({length:9},(_,i)=>`<i class="${i<PET.vsk?"on":""}"></i>`).join("")}</div>
+      <div class="foot">zayıf 1 · ideal 4–5 · obez 9</div>
+    </div>
+    <div class="metric">
+      <div class="lbl">Günlük kalori</div>
+      <div><span class="num big">${PET.kaloriHedef}</span><span class="unit">kcal</span></div>
+      <div class="track y"><b style="width:${(PET.kaloriAlinan/PET.kaloriHedef*100).toFixed(0)}%"></b></div>
+      <div class="foot">Bugün alınan ${PET.kaloriAlinan} kcal · %${Math.round(PET.kaloriAlinan/PET.kaloriHedef*100)}</div>
+    </div>
+  </div>
+
+  <div class="sect">Akıllı iştah takibi</div>
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title">Mama kabı durumu</div>
+      <span class="pill ${durum.sinif}"><i class="dot"></i>${durum.ad}</span>
+    </div>
+    <div class="bowl">
+      ${bowlViz(durum.renk)}
+      <div class="legend">
+        <div><i class="swatch" style="background:var(--ok)"></i><b>Yeşil</b> — normal tüketim</div>
+        <div><i class="swatch" style="background:var(--warn)"></i><b>Sarı</b> — azalan iştah</div>
+        <div><i class="swatch" style="background:var(--crit)"></i><b>Kırmızı</b> — fazla tüketim</div>
+      </div>
+    </div>
+    <div class="card-sub">${durum.aciklama} Bugün ${PET.mamaAlinan} g / ${PET.mamaHedef} g tüketildi; beş gündür düşüş sürüyor.</div>
+  </div>
+
+  <div class="sect">Günlük beslenme reçetesi</div>
+  <div class="card flush">
+    <div class="rings" style="padding:14px 0 4px">
+      ${ring(PET.mamaAlinan, PET.mamaHedef, "g", "Mama", durum.renk)}
+      ${ring(PET.suAlinan, PET.suHedef, "ml", "Su", "var(--info)")}
+    </div>
+    <div class="rows" style="border-top:1px solid var(--a-line)">
+      <button type="button" class="row" data-act="mamaSec" style="width:100%;text-align:left;background:none;border:0;font:inherit;color:inherit;cursor:pointer">
+        <span class="ic" style="background:var(--crit-soft);color:var(--a-red)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 11.2A2 2 0 0 1 15.8 21H8.2a2 2 0 0 1-2-1.8z"/><path d="M8.5 8V6.2A3.2 3.2 0 0 1 12 3a3.2 3.2 0 0 1 3.5 3.2V8"/></svg>
+        </span>
+        <span class="txt">
+          <span class="t1" style="display:block">${mk.ozel?"":"Royal Canin "}${mk.ad}${mk.rcDisi?' <span class="rc-disi">RC değil</span>':""}</span>
+          <span class="t2" style="display:block">${mk.not} · ${nf(mk.kcal,2)} kcal/g</span>
+        </span>
+        <span class="val" style="font-size:11.5px;color:var(--a-ink-2);font-weight:600">Değiştir</span>
+        <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+      </button>
+    </div>
+    <div class="hint" style="padding:0 15px 15px">3 öğün (08:00 · 12:30 · 19:00). Günlük ${PET.mamaHedef} g ≈ ${Math.round(PET.mamaHedef*mk.kcal)} kcal. Su hedefi ortam sıcaklığına göre güncellenir.</div>
+  </div>
+
+  <div class="sect">Hareket ve dinlenme</div>
+  <div class="card">
+    <div class="grid3">
+      <div class="metric" style="border:0;padding:0">
+        <div class="lbl">Adım</div>
+        <div><span class="num mid">${PET.adim.toLocaleString("tr-TR")}</span></div>
+        <div class="track y"><b style="width:${Math.min(PET.adim/PET.adimHedef*100,100).toFixed(0)}%"></b></div>
+        <div class="foot">hedef ${PET.adimHedef.toLocaleString("tr-TR")}</div>
+      </div>
+      <div class="metric" style="border:0;padding:0">
+        <div class="lbl">Oturup kalkma</div>
+        <div><span class="num mid">${PET.kalkma}</span></div>
+        <div class="track y"><b style="width:${Math.min(PET.kalkma/PET.kalkmaHedef*100,100).toFixed(0)}%"></b></div>
+        <div class="foot">hedef ${PET.kalkmaHedef}</div>
+      </div>
+      <div class="metric" style="border:0;padding:0">
+        <div class="lbl">Yatma</div>
+        <div><span class="num mid" style="font-size:17px">${saatFmt(PET.yatma)}</span></div>
+        <div class="track"><b style="width:${Math.min(PET.yatma/PET.yatmaHedef*100,100).toFixed(0)}%"></b></div>
+        <div class="foot">üst sınır ${PET.yatmaHedef} sa</div>
+      </div>
+    </div>
+    <div class="hint">Matın basınç sensörleri, üzerine her çıkışta duruş ve hareket süresini kaydeder. Yatma süresi üst sınırın üzerinde — hareketsizlik uyarısı verildi.</div>
+  </div>
+
+  <div class="sect">Son 7 gün</div>
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <div class="card-title">Ağırlık eğilimi</div>
+        <div class="card-sub">Günlük ölçüm · haftalık değişim</div>
+      </div>
+      <span class="delta ${kiloDelta<0?"good":"up"}">${kiloDelta<0?"−":"+"}${nf(Math.abs(kiloDelta),0)} g</span>
+    </div>
+    ${lineChart(hd.kilo, hd.etiket, {color:"var(--a-red)", ond:2, aria:"Haftalık ağırlık değişimi"})}
+  </div>`;
+}
+
+/* ---------- 2) VÜCUT ANALİZİ (InBody mantığı) ---------- */
+function viewAnaliz(){
+  const toplam = PET.kilo;
+  const yagsiz = toplam - VUCUT.yag;
+  const tbw = SIVI.icw + SIVI.ecw;
+  const ecwOran = SIVI.ecw/tbw;
+
+  /* kompozisyon satırları — her biri kendi normal aralığına göre ölçeklenir */
+  const KOMP = [
+    {ad:"Toplam kas kütlesi", deger:VUCUT.kas,     birim:"kg", ideal:VUCUT.kasIdeal},
+    {ad:"Yağ kütlesi",        deger:VUCUT.yag,     birim:"kg", ideal:VUCUT.yagIdeal},
+    {ad:"Vücut su oranı",     deger:VUCUT.suOran,  birim:"%",  ideal:VUCUT.suOranIdeal, ondalik:1},
+    {ad:"Vücut yağ oranı",    deger:VUCUT.yagOran, birim:"%",  ideal:VUCUT.yagOranIdeal, ondalik:1}
+  ];
+  const kompRows = KOMP.map(k=>{
+    const orta = (k.ideal[0]+k.ideal[1])/2;
+    const pct = k.deger/orta*100;
+    const cls = pct>110 ? "" : (pct<90 ? "warn" : "ok");
+    return `<div class="seg">
+      <div class="top"><b>${k.ad}</b><span class="v">${nf(k.deger,k.ondalik ?? 2)} ${k.birim} <span style="color:var(--a-ink-3);font-weight:600">%${Math.round(pct)}</span></span></div>
+      <div class="bararea">
+        <div class="band" style="left:${(90/145*100).toFixed(1)}%;width:${(20/145*100).toFixed(1)}%"></div>
+        <div class="fill ${cls}" style="width:${Math.min(pct/145*100,100).toFixed(1)}%"></div>
+      </div>
+      <div class="hint" style="margin-top:-2px">normal ${nf(k.ideal[0],k.ondalik ?? 2)} – ${nf(k.ideal[1],k.ondalik ?? 2)} ${k.birim}</div>
+    </div>`;
+  }).join("");
+
+  const segRows = BOLGESEL.map(b=>{
+    const cls = b.pct>=95?"ok":(b.pct>=90?"warn":"");
+    return `<div class="seg">
+      <div class="top"><b>${b.ad}</b><span class="v">${nf(b.kg,2)} kg <span style="color:var(--a-ink-3);font-weight:600">%${b.pct}</span></span></div>
+      <div class="bararea">
+        <div class="band" style="left:${(95/130*100).toFixed(1)}%;width:${(15/130*100).toFixed(1)}%"></div>
+        <div class="fill ${cls}" style="width:${Math.min(b.pct/130*100,100).toFixed(1)}%"></div>
+      </div>
+    </div>`;
+  }).join("");
+
+  return `
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <div class="card-title">Vücut kompozisyonu</div>
+        <div class="card-sub">${new Date().toLocaleDateString("tr-TR",{day:"numeric",month:"long",year:"numeric"})} · mat üzerinde 8 sn ölçüm</div>
+      </div>
+      <span class="pill ok"><i class="dot"></i>GEÇERLİ ÖLÇÜM</span>
+    </div>
+    <div class="grid3">
+      <div class="metric" style="border:0;padding:0">
+        <div class="lbl">Toplam</div><div><span class="num mid">${nf(toplam,2)}</span><span class="unit">kg</span></div>
+      </div>
+      <div class="metric" style="border:0;padding:0">
+        <div class="lbl">Yağsız kütle</div><div><span class="num mid">${nf(yagsiz,2)}</span><span class="unit">kg</span></div>
+      </div>
+      <div class="metric" style="border:0;padding:0">
+        <div class="lbl">Yağ oranı</div><div><span class="num mid">${nf(VUCUT.yagOran,1)}</span><span class="unit">%</span></div>
+      </div>
+    </div>
+    ${kompRows}
+    <div class="axis"><span>55</span><span>85</span><span>100</span><span>115</span><span>145</span></div>
+    <div class="hint">Yeşil bant ırka ve yaşa göre normal aralığı gösterir. Yüzdeler normal aralığın ortasına oranı ifade eder.</div>
+  </div>
+
+  <div class="sect">Bölgesel analiz</div>
+  <div class="card">
+    ${dogViz()}
+    ${segRows}
+    <div class="hint">Arka bacaklarda yağsız doku ideal aralığın altında. Kas kütlesini desteklemek için günlük 2 × 15 dk tempolu yürüyüş önerilir.</div>
+  </div>
+
+  <div class="sect">Basınç sensörü</div>
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <div class="card-title">Patilere düşen yük dağılımı</div>
+        <div class="card-sub">Mat üzerinde ayakta durma anındaki ortalama</div>
+      </div>
+      <span class="pill ${BASINC.some(b=>b.pct<b.ideal[0]||b.pct>b.ideal[1])?"warn":"ok"}"><i class="dot"></i>${BASINC.some(b=>b.pct<b.ideal[0]||b.pct>b.ideal[1])?"ASİMETRİ":"DENGELİ"}</span>
+    </div>
+    <div class="grid2" style="gap:9px">
+      ${BASINC.map(b=>{
+        const dis = b.pct<b.ideal[0]||b.pct>b.ideal[1];
+        return `<div class="metric" style="padding:10px 11px">
+          <div class="lbl">${b.ad} pati</div>
+          <div><span class="num mid" style="color:${dis?"var(--warn)":"var(--a-ink)"}">%${b.pct}</span></div>
+          <div class="track ${dis?"y":"g"}"><b style="width:${(b.pct/35*100).toFixed(0)}%"></b></div>
+          <div class="foot">normal %${b.ideal[0]}–${b.ideal[1]}</div>
+        </div>`;
+      }).join("")}
+    </div>
+    <div class="hint">Ön patilere düşen yük %64, arka patilere %36 — sağ arka pati normalin altında. Süreklilik gösterirse topallık veya eklem ağrısı açısından değerlendirilmelidir.</div>
+  </div>
+
+  <div class="sect">Sıvı dengesi</div>
+  <div class="card">
+    <div class="grid3">
+      <div class="metric" style="border:0;padding:0">
+        <div class="lbl">Toplam su</div><div><span class="num mid">${nf(tbw,2)}</span><span class="unit">kg</span></div>
+      </div>
+      <div class="metric" style="border:0;padding:0">
+        <div class="lbl">Hücre içi</div><div><span class="num mid">${nf(SIVI.icw,2)}</span><span class="unit">kg</span></div>
+      </div>
+      <div class="metric" style="border:0;padding:0">
+        <div class="lbl">Hücre dışı</div><div><span class="num mid">${nf(SIVI.ecw,2)}</span><span class="unit">kg</span></div>
+      </div>
+    </div>
+    <div class="seg">
+      <div class="top"><b>Hücre dışı sıvı oranı (ECW/TBW)</b><span class="v">${ecwOran.toFixed(3)}</span></div>
+      <div class="bararea">
+        <div class="band" style="left:${((0.36-0.30)/0.16*100).toFixed(1)}%;width:${(0.03/0.16*100).toFixed(1)}%"></div>
+        <div class="fill ok" style="width:${((ecwOran-0.30)/0.16*100).toFixed(1)}%"></div>
+      </div>
+      <div class="axis"><span>0.300</span><span>0.360</span><span>0.390</span><span>0.460</span></div>
+    </div>
+    <div class="hint">Oran normal sınırlarda; ödem veya dehidrasyon bulgusu yok. Su tüketimi düşmeye devam ederse bu oran yükselir.</div>
+  </div>
+
+  <div class="sect">Metabolizma</div>
+  <div class="card flush">
+    <div class="rows">
+      <div class="row">
+        <div class="ic" style="background:var(--crit-soft);color:var(--a-red)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s5 4.5 5 9a5 5 0 0 1-10 0c0-2 1-3.5 1-3.5S9 11 10.5 11C12 11 12 8 12 3"/></svg>
+        </div>
+        <div class="txt"><div class="t1">Bazal metabolizma (RER)</div><div class="t2">Dinlenme halinde günlük enerji ihtiyacı</div></div>
+        <div class="val">${PET.bmr}<small>kcal</small></div>
+      </div>
+      <div class="row">
+        <div class="ic" style="background:var(--warn-soft);color:#B87308">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V9M10 20V4M16 20v-8M22 20H2"/></svg>
+        </div>
+        <div class="txt"><div class="t1">Günlük kalori ihtiyacı (MER)</div><div class="t2">Kontrollü kilo verme programı · ideal kiloya göre</div></div>
+        <div class="val">${PET.kaloriHedef}<small>kcal</small></div>
+      </div>
+      <div class="row">
+        <div class="ic" style="background:var(--warn-soft);color:#B87308">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="txt"><div class="t1">Viseral (iç organ) yağ seviyesi</div><div class="t2">Normal sınır: 5 ve altı</div></div>
+        <div class="val">${PET.visseral}<small>/ ${PET.visseralMax}</small></div>
+      </div>
+      <div class="row">
+        <div class="ic" style="background:var(--info-soft);color:var(--info)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2.5-6 5 12L17 12h4"/></svg>
+        </div>
+        <div class="txt"><div class="t1">Aktivite ile yakılan</div><div class="t2">${PET.adim.toLocaleString("tr-TR")} adım · ${PET.kalkma} oturup kalkma</div></div>
+        <div class="val">${Math.round(PET.kaloriHedef-PET.bmr)}<small>kcal</small></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- 3) GRAFİKLER ---------- */
+let aralik = "hafta";
+const ARALIK_AD = {hafta:"Son 7 gün", ay:"Son 4 hafta", yil:"Son 12 ay"};
+
+function viewGrafik(){
+  return `
+  <div class="segctl" role="group" aria-label="Zaman aralığı" id="rangeCtl">
+    <button type="button" data-r="hafta" aria-pressed="${aralik==="hafta"}">Hafta</button>
+    <button type="button" data-r="ay" aria-pressed="${aralik==="ay"}">Ay</button>
+    <button type="button" data-r="yil" aria-pressed="${aralik==="yil"}">Yıl</button>
+  </div>
+  <div id="chartArea">${chartArea()}</div>`;
+}
+
+function chartArea(){
+  const d = DATA[aralik];
+  const kiloDelta = d.kilo[d.kilo.length-1]-d.kilo[0];
+  const mamaOrt = Math.round(d.mama.reduce((a,b)=>a+b,0)/d.mama.length);
+  const suOrt = Math.round(d.su.reduce((a,b)=>a+b,0)/d.su.length);
+  const yagDelta = d.yag[d.yag.length-1]-d.yag[0];
+  const kasDelta = d.kas[d.kas.length-1]-d.kas[0];
+
+  return `
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">Ağırlık</div><div class="card-sub">${ARALIK_AD[aralik]}</div></div>
+      <span class="delta ${kiloDelta<0?"good":"up"}">${kiloDelta<0?"−":"+"}${nf(Math.abs(kiloDelta)*1000,0)} g</span>
+    </div>
+    <div style="display:flex;gap:22px;padding:2px 0 2px">
+      <div><div class="lbl" style="font-family:var(--num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--a-ink-3);font-weight:600">Başlangıç</div>
+        <div class="num" style="font-size:16px;font-weight:700;color:var(--a-ink-2)">${nf(d.kilo[0],2)} kg</div></div>
+      <div><div class="lbl" style="font-family:var(--num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--a-ink-3);font-weight:600">Şu anki</div>
+        <div class="num" style="font-size:16px;font-weight:700;color:var(--a-red)">${nf(d.kilo[d.kilo.length-1],2)} kg</div></div>
+    </div>
+    ${lineChart(d.kilo, d.etiket, {color:"var(--a-red)", ond:2, aria:"Ağırlık değişimi"})}
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">Mama tüketimi</div><div class="card-sub">${ARALIK_AD[aralik]} · ortalama ${mamaOrt} g</div></div>
+      <span class="pill ${mamaDurum(mamaOrt,PET.mamaHedef).sinif}"><i class="dot"></i>${mamaDurum(mamaOrt,PET.mamaHedef).ad}</span>
+    </div>
+    ${barChart(d.mama, d.etiket, PET.mamaHedef, "g")}
+    <div class="chart-legend">
+      <span><i class="swatch" style="background:var(--ok)"></i>Normal</span>
+      <span><i class="swatch" style="background:var(--warn)"></i>Azalan iştah</span>
+      <span><i class="swatch" style="background:var(--crit)"></i>Fazla tüketim</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">Su tüketimi</div><div class="card-sub">${ARALIK_AD[aralik]} · ortalama ${suOrt} ml</div></div>
+      <span class="delta down">hedef ${PET.suHedef} ml</span>
+    </div>
+    ${lineChart(d.su, d.etiket, {color:"var(--info)", aria:"Su tüketimi"})}
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">Kas / yağ kütlesi</div><div class="card-sub">${ARALIK_AD[aralik]} · vücut kompozisyonu değişimi</div></div>
+    </div>
+    ${dualChart(d.kas, d.yag, d.etiket)}
+    <div class="chart-legend">
+      <span><i class="swatch" style="background:var(--ok)"></i>Yağsız kütle ${kasDelta<0?"−":"+"}${nf(Math.abs(kasDelta),2)} kg</span>
+      <span><i class="swatch" style="background:var(--warn)"></i>Yağ kütlesi ${yagDelta<0?"−":"+"}${nf(Math.abs(yagDelta),2)} kg</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">Alınan kalori</div><div class="card-sub">${ARALIK_AD[aralik]} · hedef ${PET.kaloriHedef} kcal/gün</div></div>
+    </div>
+    ${lineChart(d.kalori, d.etiket, {color:"var(--warn)", aria:"Alınan kalori"})}
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">Adım sayısı</div><div class="card-sub">${ARALIK_AD[aralik]} · ortalama ${Math.round(d.adim.reduce((a,b)=>a+b,0)/d.adim.length).toLocaleString("tr-TR")} adım</div></div>
+    </div>
+    ${barChart(d.adim, d.etiket, PET.adimHedef, "adım")}
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">Oturup kalkma</div><div class="card-sub">${ARALIK_AD[aralik]} · ortalama ${Math.round(d.kalkma.reduce((a,b)=>a+b,0)/d.kalkma.length)} kez</div></div>
+    </div>
+    ${lineChart(d.kalkma, d.etiket, {color:"var(--ok)", aria:"Oturup kalkma sayısı"})}
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">Yatma süresi</div><div class="card-sub">${ARALIK_AD[aralik]} · ortalama ${saatFmt(d.yatma.reduce((a,b)=>a+b,0)/d.yatma.length)}</div></div>
+      <span class="delta ${d.yatma[d.yatma.length-1]>PET.yatmaHedef?"up":"good"}">üst sınır ${PET.yatmaHedef} sa</span>
+    </div>
+    ${lineChart(d.yatma, d.etiket, {color:"var(--warn)", ond:1, aria:"Günlük yatma süresi"})}
+  </div>
+
+  <div class="card">
+    <div class="card-title">Dönem özeti</div>
+    <div class="rows" style="margin:0 -15px -15px">
+      <div class="row"><div class="txt"><div class="t1">En düşük mama günü</div><div class="t2">${d.etiket[d.mama.indexOf(Math.min(...d.mama))]}</div></div><div class="val">${Math.min(...d.mama)}<small>g</small></div></div>
+      <div class="row"><div class="txt"><div class="t1">En düşük su günü</div><div class="t2">${d.etiket[d.su.indexOf(Math.min(...d.su))]}</div></div><div class="val">${Math.min(...d.su)}<small>ml</small></div></div>
+      <div class="row"><div class="txt"><div class="t1">En hareketsiz gün</div><div class="t2">${d.etiket[d.adim.indexOf(Math.min(...d.adim))]}</div></div><div class="val">${Math.min(...d.adim).toLocaleString("tr-TR")}<small>adım</small></div></div>
+      <div class="row"><div class="txt"><div class="t1">Hedefe uyum</div><div class="t2">Kalori hedefinin ±%10 bandında geçen gün</div></div><div class="val">%${Math.round(d.kalori.filter(k=>Math.abs(k-PET.kaloriHedef)/PET.kaloriHedef<=0.1).length/d.kalori.length*100)}<small>uyum</small></div></div>
+    </div>
+  </div>`;
+}
+
+/* ---------- 4) UYARILAR ---------- */
+function viewUyari(){
+  const ikon = {
+    crit:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 8v5"/><path d="M12 16.5v.01"/><circle cx="12" cy="12" r="9"/></svg>`,
+    warn:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4"/><path d="M12 17.2v.01"/></svg>`,
+    info:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.8v.01"/></svg>`,
+    ok:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12.4 2.6 2.6L16 9.6"/></svg>`
+  };
+  const renk = {crit:"var(--crit)", warn:"var(--warn)", info:"var(--info)", ok:"var(--ok)"};
+  const aktif = UYARILAR.filter(u=>u.tip==="crit"||u.tip==="warn");
+  const digerleri = UYARILAR.filter(u=>u.tip!=="crit"&&u.tip!=="warn");
+
+  const kart = u => `<div class="alert ${u.tip}">
+      <i class="bar" style="background:${renk[u.tip]}"></i>
+      <span style="color:${renk[u.tip]};flex:0 0 auto;margin-top:1px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none">${ikon[u.tip].replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg></span>
+      <div><div class="t1">${u.baslik}</div><div class="t2">${u.metin}</div><div class="when">${u.zaman}</div></div>
+    </div>`;
+
+  return `
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">Bugünün durumu</div><div class="card-sub">${aktif.length} uyarı ilgi bekliyor</div></div>
+      <span class="pill warn"><i class="dot"></i>TAKİPTE</span>
+    </div>
+    <div class="grid2" style="gap:9px">
+      <div class="metric" style="border:0;padding:0">
+        <div class="lbl">Mama</div><div><span class="num mid" style="color:var(--warn)">%${Math.round(PET.mamaAlinan/PET.mamaHedef*100)}</span></div>
+        <div class="foot">az yedi · ${PET.mamaAlinan} / ${PET.mamaHedef} g</div>
+      </div>
+      <div class="metric" style="border:0;padding:0">
+        <div class="lbl">Su</div><div><span class="num mid" style="color:var(--crit)">%${Math.round(PET.suAlinan/PET.suHedef*100)}</span></div>
+        <div class="foot">az su içti · ${PET.suAlinan} / ${PET.suHedef} ml</div>
+      </div>
+      <div class="metric" style="border:0;padding:0">
+        <div class="lbl">Adım</div><div><span class="num mid" style="color:var(--warn)">%${Math.round(PET.adim/PET.adimHedef*100)}</span></div>
+        <div class="foot">hedefin altında</div>
+      </div>
+      <div class="metric" style="border:0;padding:0">
+        <div class="lbl">Yatma</div><div><span class="num mid" style="color:var(--warn);font-size:17px">${saatFmt(PET.yatma)}</span></div>
+        <div class="foot">üst sınır ${PET.yatmaHedef} sa</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sect">İlgi bekleyen</div>
+  ${aktif.map(kart).join("")}
+
+  <div class="sect">Geçmiş kayıtlar</div>
+  ${digerleri.map(kart).join("")}
+
+  <div class="card">
+    <div class="card-title">Uyarı eşikleri</div>
+    <div class="rows" style="margin:0 -15px -15px">
+      ${ESIKLER.map((x,i)=>`<div class="row">
+        <div class="txt"><div class="t1">${x.ad}</div><div class="t2">${x.aciklama}</div></div>
+        ${swHtml("e"+i,x.acik)}
+      </div>`).join("")}
+    </div>
+  </div>`;
+}
+
+/* ---------- 5) AYARLAR ---------- */
+function viewAyar(){
+  const durum = durumHesapla();
+  const satir = (id,ic,bg,fg,t1,t2,val,detay) => `<div class="rowgrp" data-grp="${id}">
+    <button type="button" class="row" data-toggle="${id}" aria-expanded="false">
+      <span class="ic" style="background:${bg};color:${fg}">${ic}</span>
+      <span class="txt"><span class="t1" style="display:block">${t1}</span><span class="t2" style="display:block">${t2}</span></span>
+      ${val ? `<span class="val" data-val="${id}" style="font-size:11.5px;color:var(--a-ink-2);font-weight:600">${val}</span>` : ""}
+      <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+    </button>
+    <div class="detail">${detay}</div>
+  </div>`;
+  const ikonMat = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="3"/><path d="M7 12h4M15 10.5h3M15 13.5h3"/></svg>`;
+  const ikonPet = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>`;
+  const ikonVet = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 7v10M7 12h10"/><rect x="3" y="3" width="18" height="18" rx="5"/></svg>`;
+  const ikonBell = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-2 8-2 8h16s-2-1-2-8"/><path d="M10.5 20a2 2 0 0 0 3 0"/></svg>`;
+
+  return `
+  <div class="card">
+    <div class="card-head">
+      <div><div class="card-title">${PET.cihaz}</div><div class="card-sub">Seri no KM-4471-TR · yazılım 2.4.1</div></div>
+      <span class="pill ok"><i class="dot"></i>BAĞLI</span>
+    </div>
+    <div class="grid3">
+      <div class="metric" style="border:0;padding:0"><div class="lbl">Mat pili</div><div><span class="num mid">%78</span></div><div class="foot">~21 gün</div></div>
+      <div class="metric" style="border:0;padding:0"><div class="lbl">Mama tartısı</div><div><span class="num mid">±2</span><span class="unit">g</span></div><div class="foot">kalibre</div></div>
+      <div class="metric" style="border:0;padding:0"><div class="lbl">Su tartısı</div><div><span class="num mid">±3</span><span class="unit">ml</span></div><div class="foot">kalibre</div></div>
+    </div>
+  </div>
+
+  <div class="sect">Cihaz</div>
+  <div class="card flush"><div class="rows">
+    ${satir("kalibre",ikonMat,"var(--crit-soft)","var(--a-red)","Tartıları kalibre et","Üç tartıyı boşaltıp sıfırlayın","",`
+      <div class="fhint">Mat üzerindeki mama, su ve gövde tartısını boşaltın; kalibrasyon yaklaşık 15 saniye sürer.</div>
+      <div class="track"><b data-kal-bar style="width:100%"></b></div>
+      <div class="frow">
+        <span class="fhint" data-kal-txt>${AYAR.kalibreDurum}</span>
+        <button type="button" class="btn primary" data-act="kalibre">Başlat</button>
+      </div>`)}
+    ${satir("isik",ikonMat,"var(--crit-soft)","var(--a-red)","Kap ışığı parlaklığı","Kapların durum ışığı şiddeti",AYAR.parlaklik,`
+      ${optGroup("parlaklik",["Düşük","Orta","Yüksek"],AYAR.parlaklik)}
+      <div style="display:grid;place-items:center;opacity:${{"Düşük":.32,"Orta":.66,"Yüksek":1}[AYAR.parlaklik]}">${bowlViz(durum.renk)}</div>
+      <div class="frow">
+        <span class="fstack"><span class="flabel">Gece modu</span><span class="fhint">22:00 – 07:00 arası ışığı kısar</span></span>
+        ${swHtml("gece",AYAR.gece)}
+      </div>`)}
+    ${satir("olcum",ikonMat,"var(--crit-soft)","var(--a-red)","Ölçüm sıklığı","Gövde tartısının çalışma biçimi",AYAR.olcum,`
+      ${optGroup("olcum",["Otomatik","Her öğünde","Günde 1"],AYAR.olcum)}
+      <div class="fhint">Otomatik modda mat, hayvan üzerinde 5 saniyeden uzun durduğu her seferde ölçüm alır ve tekrarlı ölçümlerin ortalamasını kaydeder.</div>`)}
+  </div></div>
+
+  <div class="sect">Profil</div>
+  <div class="card flush"><div class="rows">
+    ${satir("hayvan",ikonPet,"var(--a-surf-3)","var(--a-ink-2)","Hayvan bilgileri",`${PET.irk} · ${PET.yas}`,PET.ad,`
+      <div class="fstack"><span class="flabel">İsim</span><input class="tinput" data-pet="ad" value="${PET.ad}" aria-label="İsim"></div>
+      <div class="fstack"><span class="flabel">Irk</span><input class="tinput" data-pet="irk" value="${PET.irk}" aria-label="Irk"></div>
+      <div class="fstack"><span class="flabel">Yaş</span><input class="tinput" data-pet="yas" value="${PET.yas}" aria-label="Yaş"></div>
+      <div class="fstack"><span class="flabel">Cinsiyet</span>${optGroup("cinsiyet",["Erkek","Dişi"],PET.cinsiyet.split(" ")[0])}</div>`)}
+    ${satir("hedef",ikonPet,"var(--a-surf-3)","var(--a-ink-2)","Hedef kilo ve program",`Kontrollü kilo verme · ${AYAR.program}`,`${nf(PET.idealKilo,2)} kg`,`
+      <div class="frow">
+        <span class="flabel">Hedef kilo</span>
+        <span class="num" data-bind="hedefkilo" style="font-size:15px;font-weight:700">${nf(PET.idealKilo,2)} kg</span>
+      </div>
+      <input type="range" min="8" max="18" step="0.05" value="${PET.idealKilo}" data-range="idealKilo" aria-label="Hedef kilo">
+      <div class="fhint">Mevcut ağırlık ${nf(PET.kilo,2)} kg. Güvenli kayıp haftada vücut ağırlığının %1–2'sidir.</div>
+      <span class="flabel">Program süresi</span>
+      ${optGroup("program",["8 hafta","12 hafta","16 hafta"],AYAR.program)}`)}
+    ${satir("mama",ikonPet,"var(--a-surf-3)","var(--a-ink-2)","Mama tanımı","Royal Canin kataloğu · barkod ile eşleştirme",mamaKaydi().kisa,`
+      <span class="flabel">Ana mama</span>
+      ${MAMALAR.map(m=>`<button type="button" class="mamaopt${m.ad===AYAR.mama?" sec":""}" data-mama="${m.ad}">
+        <span class="fstack">
+          <span class="flabel" style="font-weight:600">${m.ozel?"":"Royal Canin "}${m.ad}${m.rcDisi?' <span class="rc-disi">RC değil</span>':""}</span>
+          <span class="fhint">${m.not}${besinOzet(m)}</span>
+        </span>
+        <span class="num" style="font-size:11.5px;font-weight:700;white-space:nowrap">${nf(m.kcal,2)} kcal/g</span>
+      </button>`).join("")}
+      <button type="button" class="mamaekle" data-act="mamaEkle">
+        <span class="arti">+</span>
+        <span class="fstack">
+          <span class="flabel" style="font-weight:600">Listede olmayan mama ekle</span>
+          <span class="fhint">Ürün adı ve kalori değeriyle kendi kaydınızı oluşturun</span>
+        </span>
+      </button>
+      <div class="fhint">Günlük ${PET.mamaHedef} g ≈ ${Math.round(PET.mamaHedef*mamaKaydi().kcal)} kcal. Ürün değişince günlük gram miktarı kalori hedefine göre yeniden hesaplanır.</div>`)}
+    ${satir("yenihayvan",ikonPet,"var(--a-surf-3)","var(--a-ink-2)","Kayıtlı hayvanlar",`${PROFILLER.length} profil · mat ağırlık imzasından tanır`,PET.ad,`
+      ${PROFILLER.map((p,i)=>`<div class="frow">
+        <span class="fstack">
+          <span class="flabel" style="font-weight:600">${p.pet.ad}${i===aktifProfil?' <span class="rc-disi" style="background:var(--ok-soft);color:var(--ok)">aktif</span>':""}</span>
+          <span class="fhint">${TUR_AD[p.tur]} · ${p.pet.irk} · ${nf(p.pet.kilo,2)} kg</span>
+        </span>
+      </div>`).join("")}
+      <div class="btnrow">
+        <button type="button" class="btn primary" data-act="yeniHayvan">Yeni hayvan ekle</button>
+        <button type="button" class="btn" data-act="profilSec">Profil değiştir</button>
+      </div>`)}
+  </div></div>
+
+  <div class="sect">Paylaşım ve bildirim</div>
+  <div class="card flush"><div class="rows">
+    ${satir("vet",ikonVet,"var(--info-soft)","var(--info)","Veteriner erişimi","Vet. Hek. M. C. Özen",AYAR.vet?"Açık":"Kapalı",`
+      <div class="frow">
+        <span class="fstack"><span class="flabel">Kliniğe veri paylaşımı</span><span class="fhint">Ölçüm ve tüketim geçmişi</span></span>
+        ${swHtml("vet",AYAR.vet)}
+      </div>
+      <span class="flabel">Rapor sıklığı</span>
+      ${optGroup("vetSik",["Günlük","Haftalık","Aylık"],AYAR.vetSik)}`)}
+    ${satir("bildirim",ikonBell,"var(--warn-soft)","#B87308","Bildirimler","Öğün, uyarı ve haftalık özet",`${AYAR.bildirim.filter(b=>b.acik).length} açık`,
+      AYAR.bildirim.map((b,i)=>`<div class="frow">
+        <span class="fstack"><span class="flabel" style="font-weight:600">${b.ad}</span><span class="fhint">${b.aciklama}</span></span>
+        ${swHtml("b"+i,b.acik)}
+      </div>`).join(""))}
+    ${satir("disa",ikonVet,"var(--info-soft)","var(--info)","Veri dışa aktarma","Klinik rapor ve ölçüm geçmişi","",`
+      <div class="fhint">Rapor; vücut kompozisyonu, bölgesel analiz, sıvı dengesi, metabolizma ve tüketim geçmişini tek sayfada toplar.</div>
+      <div class="btnrow">
+        <button type="button" class="btn primary" data-act="pdf">PDF klinik rapor</button>
+        <button type="button" class="btn" data-act="csv">CSV ölçüm geçmişi</button>
+      </div>`)}
+  </div></div>
+
+`;
+}
+
+/* =========================================================================
+   SEKME KURULUMU
+   ========================================================================= */
+const SEKMELER = [
+  {id:"genel", ad:"Genel Bakış", render:viewGenel, ikon:`<path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.8 20v-5.4h4.4V20"/>`},
+  {id:"analiz", ad:"Analiz", render:viewAnaliz, ikon:`<rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M8 15.5v-3M12 15.5v-7M16 15.5v-5"/>`},
+  {id:"grafik", ad:"Grafikler", render:viewGrafik, ikon:`<path d="M3.5 17.5 9 11l3.5 3.5L20.5 6"/><path d="M20.5 10.5V6h-4.5"/>`},
+  {id:"uyari", ad:"Uyarılar", render:viewUyari, ikon:`<path d="M12 3.5 2.8 19.5h18.4z"/><path d="M12 9.5v4.2"/><path d="M12 16.6v.01"/>`},
+  {id:"ayar", ad:"Ayarlar", render:viewAyar, ikon:`<circle cx="12" cy="12" r="3.2"/><path d="M19.4 14.5a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1v.3a2 2 0 1 1-4 0v-.2a1.6 1.6 0 0 0-2.8-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3.5 14a2 2 0 1 1 0-4h.2a1.6 1.6 0 0 0 1.1-2.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 2.8-1.1V3a2 2 0 1 1 4 0v.2a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7h.3a2 2 0 1 1 0 4h-.2a1.6 1.6 0 0 0-1.5 1.1z"/>`}
+];
+
+const views = document.getElementById("views");
+const tabbar = document.getElementById("tabbar");
+
+SEKMELER.forEach((s,i)=>{
+  const v = el(`<section class="view${i===0?" is-active":""}" id="view-${s.id}" role="tabpanel" aria-label="${s.ad}"></section>`);
+  v.innerHTML = s.render();
+  views.appendChild(v);
+
+  const b = el(`<button type="button" role="tab" aria-selected="${i===0}" aria-controls="view-${s.id}" data-t="${s.id}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${s.ikon}</svg>
+    <span>${s.ad}</span></button>`);
+  tabbar.appendChild(b);
+});
+
+tabbar.addEventListener("click", e=>{
+  const b = e.target.closest("button[data-t]"); if(!b) return;
+  tabbar.querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected", x===b));
+  views.querySelectorAll(".view").forEach(v=>v.classList.toggle("is-active", v.id==="view-"+b.dataset.t));
+  views.querySelector(".view.is-active").scrollTop = 0;
+});
+
+/* zaman aralığı değişimi */
+views.addEventListener("click", e=>{
+  const b = e.target.closest("#rangeCtl button"); if(!b) return;
+  aralik = b.dataset.r;
+  document.querySelectorAll("#rangeCtl button").forEach(x=>x.setAttribute("aria-pressed", x===b));
+  document.getElementById("chartArea").innerHTML = chartArea();
+});
+
+/* =========================================================================
+   ETKİLEŞİM — ayar satırları, anahtarlar, seçenekler
+   ========================================================================= */
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove("show"), 2400);
+}
+
+/* üst şeritteki cihaz okumaları — profil değiştikçe güncellenir */
+function syncReadout(){   /* üst şeritte okuma kalmadı; ileride gerekirse dursun */
+  const d = {kilo:nf(PET.kilo,2)+" kg", mama:PET.mamaHedef+" g", su:PET.suHedef+" ml"};
+  document.querySelectorAll("[data-ro]").forEach(n=>{ n.textContent = d[n.dataset.ro]; });
+}
+
+function rerender(id){
+  const v = document.getElementById("view-"+id);
+  if(!v) return;
+  if(id==="genel") syncReadout();
+  const acik = [...v.querySelectorAll(".rowgrp.open")].map(x=>x.dataset.grp);
+  const sc = v.scrollTop;
+  v.innerHTML = SEKMELER.find(s=>s.id===id).render();
+  acik.forEach(g=>{
+    const n = v.querySelector('[data-grp="'+g+'"]');
+    if(n){ n.classList.add("open"); n.querySelector("[data-toggle]").setAttribute("aria-expanded","true"); }
+  });
+  v.scrollTop = sc;
+}
+
+function setOpt(name,val){
+  if(name==="parlaklik"){ AYAR.parlaklik=val; showToast("Kap ışığı parlaklığı: "+val); }
+  else if(name==="olcum"){ AYAR.olcum=val; }
+  else if(name==="program"){ AYAR.program=val; }
+  else if(name==="vetSik"){ AYAR.vetSik=val; }
+  else if(name==="cinsiyet"){ PET.cinsiyet=val+" · Kısırlaştırılmış"; }
+  else if(name==="mama"){ AYAR.mama=val; rerender("genel"); showToast("Ana mama güncellendi"); }
+  rerender("ayar");
+}
+
+views.addEventListener("click", e=>{
+  /* satır aç / kapa */
+  const tg = e.target.closest("[data-toggle]");
+  if(tg){
+    const g = tg.closest(".rowgrp");
+    const acik = g.classList.toggle("open");
+    tg.setAttribute("aria-expanded", acik);
+    return;
+  }
+  /* aç-kapa anahtarı */
+  const sw = e.target.closest("[data-sw]");
+  if(sw){
+    const k = sw.dataset.sw;
+    if(k==="gece"){ AYAR.gece=!AYAR.gece; rerender("ayar"); }
+    else if(k==="vet"){ AYAR.vet=!AYAR.vet; showToast(AYAR.vet?"Veteriner paylaşımı açıldı":"Veteriner paylaşımı kapatıldı"); rerender("ayar"); }
+    else if(k[0]==="b"){ const i=+k.slice(1); AYAR.bildirim[i].acik=!AYAR.bildirim[i].acik; rerender("ayar"); }
+    else if(k[0]==="e"){ const i=+k.slice(1); ESIKLER[i].acik=!ESIKLER[i].acik; rerender("uyari"); }
+    return;
+  }
+  /* seçenek grubu */
+  const ob = e.target.closest("[data-opt] button");
+  if(ob){ setOpt(ob.closest("[data-opt]").dataset.opt, ob.dataset.v); return; }
+  /* mama seçimi */
+  const mo = e.target.closest("[data-mama]");
+  if(mo){
+    AYAR.mama = mo.dataset.mama;
+    closeSheet();
+    rerender("ayar"); rerender("genel");
+    showToast("Mama güncellendi: Royal Canin " + AYAR.mama);
+    return;
+  }
+  /* eylemler */
+  const ac = e.target.closest("[data-act]");
+  if(ac){
+    const a = ac.dataset.act;
+    if(a==="kalibre"){
+      const bar = document.querySelector("[data-kal-bar]"), txt = document.querySelector("[data-kal-txt]");
+      ac.disabled = true; ac.textContent = "Kalibre ediliyor…";
+      txt.textContent = "Tartılar sıfırlanıyor…";
+      bar.style.transition = "none"; bar.style.width = "0%";
+      requestAnimationFrame(()=>{ bar.style.transition = "width 1.7s linear"; bar.style.width = "100%"; });
+      setTimeout(()=>{
+        const s = new Date().toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"});
+        AYAR.kalibreDurum = "3 tartı da kalibre · bugün " + s;
+        showToast("Kalibrasyon tamamlandı · hassasiyet ±2 g");
+        rerender("ayar");
+      }, 1800);
+    }
+    else if(a==="pdf"){ openReport(); }
+    else if(a==="csv"){ showToast("CSV ölçüm geçmişi dışa aktarıldı (365 kayıt)"); }
+    else if(a==="yeniHayvan"){ showToast("Yeni profil oluşturuldu · mat tanıma modunda"); }
+    else if(a==="mamaSec"){ openSheet(); }
+    else if(a==="mamaEkle"){ openSheet(true); }   /* panel, ekleme formu açık gelir */
+    else if(a==="profilSec"){ openProfilSheet(); }
+    else if(a==="yeniHayvan"){ openYeniHayvanSheet(); }
+    else if(a==="sheetKapat"){ closeSheet(); }
+    return;
+  }
+});
+
+/* ---- mama seçim paneli (telefon içi alt sayfa) ---- */
+const sheet = document.getElementById("sheet");
+function openSheet(formAcik){
+  sheet.innerHTML = `<div class="sheet">
+    <div class="sheet-head">
+      <div>
+        <div class="card-title">Mama seçimi</div>
+        <div class="card-sub">Royal Canin kataloğu · ${PET.irk} için uygun ürünler</div>
+      </div>
+      <button type="button" class="btn" data-act="sheetKapat">Kapat</button>
+    </div>
+    <div class="sheet-body">
+      ${MAMALAR.map(m=>`<button type="button" class="mamaopt${m.ad===AYAR.mama?" sec":""}" data-mama="${m.ad}">
+        <span class="fstack">
+          <span class="flabel" style="font-weight:600">${m.ozel?"":"Royal Canin "}${m.ad}${m.rcDisi?' <span class="rc-disi">RC değil</span>':""}</span>
+          <span class="fhint">${m.not}${besinOzet(m)}</span>
+        </span>
+        <span class="num" style="font-size:11.5px;font-weight:700;white-space:nowrap">${nf(m.kcal,2)} kcal/g</span>
+      </button>`).join("")}
+      <button type="button" class="mamaekle" data-act="barkod">
+        <span class="arti" style="background:var(--a-ink);color:#fff">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M4 7V5.5A1.5 1.5 0 0 1 5.5 4H7M17 4h1.5A1.5 1.5 0 0 1 20 5.5V7M20 17v1.5a1.5 1.5 0 0 1-1.5 1.5H17M7 20H5.5A1.5 1.5 0 0 1 4 18.5V17"/>
+            <path d="M8 8.5v7M11 8.5v7M14 8.5v7M16.5 8.5v7"/>
+          </svg>
+        </span>
+        <span class="fstack">
+          <span class="flabel" style="font-weight:600">Barkod ile tara</span>
+          <span class="fhint">Paketteki barkodu okutun, ürün otomatik eklensin</span>
+        </span>
+      </button>
+
+      <button type="button" class="mamaekle${formAcik?" hidden":""}" data-act="mamaEkleAc">
+        <span class="arti">+</span>
+        <span class="fstack">
+          <span class="flabel" style="font-weight:600">Listede olmayan mama ekle</span>
+          <span class="fhint">Ürün adı ve kalori değeriyle kendi kaydınızı oluşturun</span>
+        </span>
+      </button>
+
+      <div class="mamaform${formAcik?"":" hidden"}" id="mamaForm">
+        <div class="frow">
+          <span class="flabel">Yeni mama</span>
+          <button type="button" class="btn" data-act="barkod">Barkod ile tara</button>
+        </div>
+        <div class="fstack">
+          <span class="flabel" style="font-weight:600">Ürün adı</span>
+          <input class="tinput" id="yeniMamaAd" placeholder="örn. Mini Puppy" aria-label="Ürün adı">
+        </div>
+        <div class="fstack">
+          <span class="flabel" style="font-weight:600">Kalori yoğunluğu</span>
+          <input class="tinput" id="yeniMamaKcal" type="text" inputmode="decimal" placeholder="örn. 3,60" aria-label="kcal/g">
+          <span class="fhint">Paketin arkasındaki "metabolize edilebilir enerji" değeri, kcal/g cinsinden.</span>
+        </div>
+        <div class="fstack">
+          <span class="flabel" style="font-weight:600">Açıklama <span style="font-weight:400;color:var(--a-ink-3)">(isteğe bağlı)</span></span>
+          <input class="tinput" id="yeniMamaNot" placeholder="örn. Yavru · küçük ırk" aria-label="Açıklama">
+        </div>
+        <div class="btnrow">
+          <button type="button" class="btn primary" data-act="mamaEkleKaydet">Ekle ve seç</button>
+          <button type="button" class="btn" data-act="mamaEkleKapat">Vazgeç</button>
+        </div>
+      </div>
+
+      <div class="fhint">Ürün değiştiğinde günlük gram miktarı, kalori hedefi sabit kalacak şekilde yeniden hesaplanır.</div>
+    </div>
+  </div>`;
+  sheet.classList.remove("hidden");
+}
+function closeSheet(){ sheet.classList.add("hidden"); sheet.innerHTML = ""; }
+
+/* ---- profil rozeti: fotoğraf varsa fotoğraf, yoksa baş harf ---- */
+function profilAvatar(p, boyut){
+  const b = boyut || 44;
+  return p.foto
+    ? `<img class="pf-foto" src="${p.foto}" alt="" style="width:${b}px;height:${b}px">`
+    : `<span class="pf-harf" style="width:${b}px;height:${b}px;font-size:${Math.round(b*0.38)}px">${p.pet.ad.charAt(0)}</span>`;
+}
+
+/* ---- profil seçim paneli ---- */
+function openProfilSheet(){
+  sheet.innerHTML = `<div class="sheet">
+    <div class="sheet-head">
+      <div>
+        <div class="card-title">Hayvan profili</div>
+        <div class="card-sub">Mat, üzerine çıkanı ağırlık imzasından tanır</div>
+      </div>
+      <button type="button" class="btn" data-act="sheetKapat">Kapat</button>
+    </div>
+    <div class="sheet-body">
+      ${PROFILLER.map((p,i)=>{
+        const ob = obezite(p.pet.kilo, p.pet.idealKilo);
+        return `<button type="button" class="pf-satir${i===aktifProfil?" sec":""}" data-profil="${i}">
+          ${profilAvatar(p)}
+          <span class="fstack">
+            <span class="flabel" style="font-weight:700">${p.pet.ad}</span>
+            <span class="fhint">${TUR_AD[p.tur]} · ${p.pet.irk} · ${p.pet.yas}</span>
+          </span>
+          <span class="pill ${ob.sinif}"><i class="dot"></i>${nf(p.pet.kilo,2)} kg</span>
+        </button>`;
+      }).join("")}
+      <button type="button" class="mamaekle" data-act="yeniHayvanAc">
+        <span class="arti">+</span>
+        <span class="fstack">
+          <span class="flabel" style="font-weight:600">Yeni hayvan ekle</span>
+          <span class="fhint">Fotoğraf, tür, ırk ve hedef kilo ile profil oluşturun</span>
+        </span>
+      </button>
+    </div>
+  </div>`;
+  sheet.classList.remove("hidden");
+}
+
+/* ---- yeni hayvan formu ---- */
+function openYeniHayvanSheet(){
+  sheet.innerHTML = `<div class="sheet">
+    <div class="sheet-head">
+      <div>
+        <div class="card-title">Yeni hayvan</div>
+        <div class="card-sub">Ölçüm hedefleri türe ve ağırlığa göre hesaplanır</div>
+      </div>
+      <button type="button" class="btn" data-act="profilGeri">Geri</button>
+    </div>
+    <div class="sheet-body">
+      <label class="yh-foto">
+        <span class="onizleme" id="yhOnizleme"><span class="yh-ikon">+</span></span>
+        <span class="fstack">
+          <span class="flabel" style="font-weight:600">Profil fotoğrafı</span>
+          <span class="fhint">Dokunup galeriden seçin veya fotoğraf çekin</span>
+        </span>
+        <input type="file" accept="image/*" id="yhFoto" hidden>
+      </label>
+
+      <div class="fstack"><span class="flabel">İsim</span>
+        <input class="tinput" id="yhAd" placeholder="örn. Reis" aria-label="İsim"></div>
+      <div class="fstack"><span class="flabel">Tür</span>
+        ${optGroup("yeniTur",[["kopek","Köpek"],["kedi","Kedi"]],"kopek")}</div>
+      <div class="fstack"><span class="flabel">Irk</span>
+        <input class="tinput" id="yhIrk" placeholder="örn. Beagle" aria-label="Irk"></div>
+      <div class="grid2" style="gap:9px">
+        <div class="fstack"><span class="flabel">Yaş</span>
+          <input class="tinput" id="yhYas" placeholder="örn. 3 yaş" aria-label="Yaş"></div>
+        <div class="fstack"><span class="flabel">Cinsiyet</span>
+          ${optGroup("yeniCinsiyet",["Dişi","Erkek"],"Dişi")}</div>
+      </div>
+      <div class="grid2" style="gap:9px">
+        <div class="fstack"><span class="flabel">Güncel kilo</span>
+          <input class="tinput" id="yhKilo" inputmode="decimal" placeholder="kg" aria-label="Güncel kilo"></div>
+        <div class="fstack"><span class="flabel">Hedef kilo</span>
+          <input class="tinput" id="yhHedef" inputmode="decimal" placeholder="kg" aria-label="Hedef kilo"></div>
+      </div>
+      <div class="fhint">Hedef kilo boş bırakılırsa güncel kilo hedef kabul edilir. Günlük kalori, su ve mama miktarı 70 × kilo<sup>0,75</sup> formülüyle otomatik hesaplanır.</div>
+      <div class="btnrow">
+        <button type="button" class="btn primary" data-act="yeniHayvanKaydet">Profili oluştur</button>
+        <button type="button" class="btn" data-act="profilGeri">Vazgeç</button>
+      </div>
+    </div>
+  </div>`;
+  sheet.classList.remove("hidden");
+  const dosya = document.getElementById("yhFoto");
+  dosya.addEventListener("change", ()=>{
+    const f = dosya.files && dosya.files[0];
+    if(!f) return;
+    if(f.size > 6*1024*1024){ showToast("Fotoğraf 6 MB'den küçük olmalı"); return; }
+    const okuyucu = new FileReader();
+    okuyucu.onload = ()=>{
+      const ok = document.getElementById("yhOnizleme");
+      ok.innerHTML = `<img src="${okuyucu.result}" alt="">`;
+      ok.dataset.veri = okuyucu.result;
+    };
+    okuyucu.readAsDataURL(f);
+  });
+}
+
+/* türe ve ağırlığa göre makul bir profil üretir */
+function yeniProfilOlustur(g){
+  const kedi = g.tur === "kedi";
+  const rer = Math.round(70 * Math.pow(g.idealKilo, 0.75));
+  const mer = Math.round(rer * (kedi ? 1.2 : 1.6));
+  const kcalG = kedi ? 3.85 : 3.80;
+  const mamaHedef = Math.round(mer / kcalG);
+  const suHedef = Math.round(g.kilo * (kedi ? 45 : 50));
+  const yag = +(g.kilo * (kedi ? 0.20 : 0.17)).toFixed(2);
+  const kas = +(g.kilo * (kedi ? 0.63 : 0.66)).toFixed(2);
+  const suOran = kedi ? 57.5 : 60.0;
+  const tbw = g.kilo * suOran / 100;
+  const govde = +(kas * 0.70).toFixed(2), on = +(kas * 0.075).toFixed(2), arka = +(kas * 0.09).toFixed(2);
+  const adimHedef = kedi ? 3000 : Math.round(600 * Math.pow(g.kilo, 0.5) + 3000);
+
+  const pet = {
+    ad:g.ad.toUpperCase(), irk:g.irk || (kedi?"Tanımsız":"Tanımsız"), yas:g.yas || "—",
+    cinsiyet:g.cinsiyet, cihaz:"Kaloritim Mat", senk:new Date().toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"}),
+    kilo:g.kilo, idealKilo:g.idealKilo,
+    bmi:+(g.kilo / Math.pow(kedi?0.45:0.62, 2) / 10).toFixed(1),
+    vsk:Math.max(1, Math.min(9, Math.round(5 + (g.kilo-g.idealKilo)/g.idealKilo*20))), vskMax:9,
+    kaloriHedef:mer, kaloriAlinan:Math.round(mer*0.94),
+    mamaHedef, mamaAlinan:Math.round(mamaHedef*0.94),
+    suHedef, suAlinan:Math.round(suHedef*0.95),
+    bmr:rer, visseral:kedi?4:3, visseralMax:10,
+    adim:Math.round(adimHedef*0.97), adimHedef,
+    kalkma:kedi?38:48, kalkmaHedef:kedi?40:50,
+    yatma:kedi?16.2:12.8, yatmaHedef:kedi?16.0:13.0,
+    kas, yag,
+    egilim:{kilo:0.02, mama:2, su:4, kas:0.02, yag:-0.01, kalori:6, adim:120, kalkma:2, yatma:-0.1}
+  };
+  return {
+    id:"p"+Date.now(), tur:g.tur, foto:g.foto || "",
+    pet,
+    vucut:{ kas, kasIdeal:[+(kas*0.92).toFixed(2), +(kas*1.08).toFixed(2)],
+            yag, yagIdeal:[+(yag*0.75).toFixed(2), +(yag*1.2).toFixed(2)],
+            suOran, suOranIdeal: kedi?[54,64]:[55,65],
+            yagOran:+(yag/g.kilo*100).toFixed(1), yagOranIdeal: kedi?[15,25]:[12,20] },
+    sivi:{ icw:+(tbw*0.63).toFixed(2), ecw:+(tbw*0.37).toFixed(2) },
+    bolgesel:[
+      {ad:"Sol ön bacak", kg:on, pct:99},{ad:"Sağ ön bacak", kg:on, pct:100},
+      {ad:"Gövde", kg:govde, pct:101},
+      {ad:"Sol arka bacak", kg:arka, pct:98},{ad:"Sağ arka bacak", kg:arka, pct:99}
+    ],
+    basinc:[
+      {ad:"Sol ön", pct:kedi?29:30, ideal:kedi?[27,31]:[28,32]},
+      {ad:"Sağ ön", pct:kedi?30:31, ideal:kedi?[27,31]:[28,32]},
+      {ad:"Sol arka", pct:kedi?21:20, ideal:kedi?[19,23]:[18,22]},
+      {ad:"Sağ arka", pct:kedi?20:19, ideal:kedi?[19,23]:[18,22]}
+    ],
+    mama: kedi ? "Sterilised 37" : "Mini Adult",
+    uyarilar:[
+      {tip:"ok", baslik:"Profil oluşturuldu", metin:`${pet.ad} için hedefler ağırlığa göre hesaplandı: günlük ${mer} kcal, ${mamaHedef} g mama, ${suHedef} ml su.`, zaman:"Az önce"},
+      {tip:"info", baslik:"İlk ölçüm bekleniyor", metin:"Mat üzerine çıktığında vücut kompozisyonu ölçülecek ve değerler güncellenecek.", zaman:"Az önce"}
+    ]
+  };
+}
+
+/* =========================================================================
+   BARKOD / QR TARAYICI
+   Tarayıcının yerleşik BarcodeDetector arayüzünü kullanır (Chrome, Edge,
+   Android). Desteklenmeyen tarayıcılarda kodun elle girilmesine düşer.
+   Kamera yalnızca HTTPS üzerinde açılır — site sertifikalı olduğu için sorun yok.
+   ========================================================================= */
+const tarayici = document.getElementById("tarayici");
+let tarAkis = null, tarDongu = null;
+
+function tarDurum(msg, kod){
+  const d = tarayici.querySelector(".tar-durum"); if(d) d.textContent = msg;
+  const k = tarayici.querySelector(".tar-kod"); if(k) k.textContent = kod || "";
+}
+
+async function tarayiciAc(){
+  tarayici.innerHTML = `
+    <video playsinline muted autoplay></video>
+    <div class="tar-ust">
+      <div>
+        <div class="t1">Barkod ile mama ekle</div>
+        <div class="t2">Paketin üzerindeki barkodu veya QR kodu okutun</div>
+      </div>
+      <button type="button" class="tar-kapat" data-tar="kapat">Kapat</button>
+    </div>
+    <div class="tar-orta">
+      <div class="tar-cerceve"><i></i><i></i><i></i><i></i><div class="tar-cizgi"></div></div>
+    </div>
+    <div class="tar-alt">
+      <div class="tar-durum">Kamera açılıyor…</div>
+      <div class="tar-kod"></div>
+      <button type="button" class="tar-elle" data-tar="elle">Kodu elle gir</button>
+    </div>`;
+  tarayici.classList.remove("hidden");
+
+  try{
+    tarAkis = await navigator.mediaDevices.getUserMedia({
+      video:{ facingMode:{ideal:"environment"}, width:{ideal:1280}, height:{ideal:720} }, audio:false
+    });
+  }catch(err){
+    tarDurum(err && err.name==="NotAllowedError"
+      ? "Kamera izni verilmedi."
+      : "Kameraya erişilemedi.");
+    elleGiris();
+    return;
+  }
+  const video = tarayici.querySelector("video");
+  video.srcObject = tarAkis;
+  await video.play().catch(()=>{});
+  tarDurum("Barkodu çerçeveye getirin");
+
+  /* Yol 1: tarayıcının yerleşik çözücüsü (Chrome, Edge, Android) */
+  if("BarcodeDetector" in window){
+    const dedektor = new BarcodeDetector({
+      formats:["ean_13","ean_8","upc_a","upc_e","qr_code","code_128"]
+    });
+    tarDongu = setInterval(async ()=>{
+      if(video.readyState < 2) return;
+      try{
+        const kodlar = await dedektor.detect(video);
+        if(kodlar.length){ kodBulundu(String(kodlar[0].rawValue).trim()); }
+      }catch(_){ /* kare atlanabilir, döngü sürer */ }
+    }, 220);
+    return;
+  }
+
+  /* Yol 2: iOS Safari — yerleşik çözücü yok, ZXing devreye girer */
+  tarDurum("Okuyucu hazırlanıyor…");
+  const hazir = await zxingYukle();
+  if(!hazir){
+    tarDurum("Okuyucu yüklenemedi — kodu elle girebilirsiniz.");
+    elleGiris();
+    return;
+  }
+  const Z = window.ZXing;
+  const okuyucu = new Z.MultiFormatReader();
+  const ipuclari = new Map();
+  ipuclari.set(Z.DecodeHintType.POSSIBLE_FORMATS, [
+    Z.BarcodeFormat.EAN_13, Z.BarcodeFormat.EAN_8, Z.BarcodeFormat.UPC_A,
+    Z.BarcodeFormat.UPC_E, Z.BarcodeFormat.QR_CODE, Z.BarcodeFormat.CODE_128
+  ]);
+  ipuclari.set(Z.DecodeHintType.TRY_HARDER, true);
+  okuyucu.setHints(ipuclari);
+
+  const tuval = document.createElement("canvas");
+  const ctx = tuval.getContext("2d", {willReadFrequently:true});
+  tarDurum("Barkodu çerçeveye getirin");
+  tarDongu = setInterval(()=>{
+    if(video.readyState < 2 || !video.videoWidth) return;
+    /* çözme maliyetini düşürmek için kareyi 640 piksel genişliğe indiriyoruz */
+    const olcek = Math.min(1, 640/video.videoWidth);
+    tuval.width  = Math.round(video.videoWidth*olcek);
+    tuval.height = Math.round(video.videoHeight*olcek);
+    ctx.drawImage(video, 0, 0, tuval.width, tuval.height);
+    try{
+      const kaynak = new Z.HTMLCanvasElementLuminanceSource(tuval);
+      const bitmap = new Z.BinaryBitmap(new Z.HybridBinarizer(kaynak));
+      const sonuc = okuyucu.decode(bitmap);
+      if(sonuc) kodBulundu(String(sonuc.getText()).trim());
+    }catch(_){ okuyucu.reset(); /* bu karede kod yok, döngü sürer */ }
+  }, 300);
+}
+
+/* =========================================================================
+   BESİN TABLOSU OCR
+   Paketin analitik bileşenler tablosunu okuyup değerleri ayıklar.
+   Tam metin doğruluğu gerekmez: anahtar kelimenin yanındaki sayıyı arar ve
+   fizyolojik olarak makul aralıkta değilse reddeder.
+   ========================================================================= */
+let ocrIsci = null;
+
+function tesseractYukle(){
+  if(window.Tesseract) return Promise.resolve(true);
+  return new Promise(res=>{
+    const s = document.createElement("script");
+    s.src = "tesseract/tesseract.min.js";
+    s.onload = ()=>res(!!window.Tesseract);
+    s.onerror = ()=>res(false);
+    document.head.appendChild(s);
+  });
+}
+
+async function ocrHazirla(ilerleme){
+  if(ocrIsci) return ocrIsci;
+  if(!(await tesseractYukle())) return null;
+  ocrIsci = await window.Tesseract.createWorker("tur", 1, {
+    workerPath: "tesseract/worker.min.js",
+    corePath:   "tesseract/tesseract-core-simd.wasm.js",
+    langPath:   "tesseract/",
+    logger: m => {
+      if(ilerleme && m.status === "recognizing text") ilerleme(Math.round(m.progress*100));
+      else if(ilerleme && m.progress !== undefined) ilerleme(null, m.status);
+    }
+  });
+  return ocrIsci;
+}
+
+/* okunan metinden değerleri çıkarır — Türkçe ve İngilizce etiketleri tanır */
+function besinAyikla(metin){
+  const t = metin.replace(/\s+/g," ").replace(/(\d)\s*,\s*(\d)/g,"$1.$2");
+  /* OCR yüzde işaretini rakama çevirebiliyor ("%30" → "9530").
+     Bu yüzden etiketten sonraki sayı öbeğini alıp, değer fizyolojik
+     aralığa oturana kadar baştan bir hane kırpıyoruz.                    */
+  const al = (re, min, max) => {
+    const m = t.match(re);
+    if(!m) return null;
+    let ham = String(m[1]||"").replace(/[^0-9.]/g,"");
+    while(ham.length){
+      const v = parseFloat(ham);
+      if(!isNaN(v) && v >= min && v <= max) return Math.round(v*10)/10;
+      ham = ham.slice(1);
+    }
+    return null;
+  };
+  const sayiObegi = "([0-9][0-9.,]{0,6})";
+  return {
+    kcalKg:  al(new RegExp("([0-9]{3,5})\\s*kcal\\s*\\/?\\s*kg","i"), 1500, 5200),
+    protein: al(new RegExp("protein[^0-9]{0,12}"+sayiObegi,"i"), 5, 60),
+    yag:     al(new RegExp("(?:ya[ğgq][^0-9]{0,14}|fat\\s*content[^0-9]{0,10}|fat[^0-9]{0,10})"+sayiObegi,"i"), 2, 35),
+    kul:     al(new RegExp("(?:ham\\s*k[üu]l|crude\\s*ash|ash)[^0-9]{0,12}"+sayiObegi,"i"), 1, 15),
+    lif:     al(new RegExp("(?:ham\\s*(?:lif(?:ler)?|sel[üu]loz)|crude\\s*fibres?|fibre)[^0-9]{0,12}"+sayiObegi,"i"), 0.5, 20),
+    nem:     al(new RegExp("(?:nem|moisture)[^0-9]{0,12}"+sayiObegi,"i"), 3, 20)
+  };
+}
+
+const BESIN_AD = {kcalKg:"Enerji", protein:"Protein", yag:"Yağ", kul:"Ham kül", lif:"Ham lif", nem:"Nem"};
+const BESIN_BIRIM = {kcalKg:"kcal/kg", protein:"%", yag:"%", kul:"%", lif:"%", nem:"%"};
+
+/* videodan tam çözünürlüklü kare alır, OCR için kontrastı açar */
+function kareAl(video){
+  const c = document.createElement("canvas");
+  c.width = video.videoWidth; c.height = video.videoHeight;
+  const x = c.getContext("2d", {willReadFrequently:true});
+  x.drawImage(video, 0, 0);
+  const g = x.getImageData(0,0,c.width,c.height), p = g.data;
+  /* gri tonlama + kontrast germe: küçük puntolu tablo metnini belirginleştirir */
+  let min = 255, max = 0;
+  for(let i=0;i<p.length;i+=4){
+    const l = (p[i]*0.299 + p[i+1]*0.587 + p[i+2]*0.114)|0;
+    p[i]=p[i+1]=p[i+2]=l;
+    if(l<min) min=l; if(l>max) max=l;
+  }
+  const fark = Math.max(1, max-min);
+  for(let i=0;i<p.length;i+=4){
+    const v = Math.min(255, Math.max(0, ((p[i]-min)*255/fark)|0));
+    p[i]=p[i+1]=p[i+2]=v;
+  }
+  x.putImageData(g,0,0);
+  return c;
+}
+
+async function besinOku(){
+  const video = tarayici.querySelector("video");
+  if(!video || !video.videoWidth){ tarDurum("Kamera görüntüsü yok — değerleri elle girebilirsiniz."); return; }
+  const btn = tarayici.querySelector('[data-tar="besinOku"]');
+  if(btn){ btn.disabled = true; btn.textContent = "Okunuyor…"; }
+
+  tarDurum("Okuyucu hazırlanıyor…");
+  const isci = await ocrHazirla((yuzde, durum)=>{
+    if(yuzde !== null && yuzde !== undefined) tarDurum("Tablo okunuyor… %"+yuzde);
+    else if(durum) tarDurum("Hazırlanıyor…");
+  });
+  if(!isci){
+    tarDurum("Metin okuyucu yüklenemedi — değerleri elle girin.");
+    if(btn){ btn.disabled = false; btn.textContent = "Besin tablosunu okut"; }
+    return;
+  }
+  try{
+    const kare = kareAl(video);
+    const { data } = await isci.recognize(kare);
+    const yeni = besinAyikla(data.text || "");
+    const okunan = Object.keys(yeni).filter(k=>yeni[k] !== null);
+    if(!okunan.length){
+      tarDurum("Tablo okunamadı — düz tutup tekrar deneyin veya elle girin.");
+      if(btn){ btn.disabled = false; btn.textContent = "Tekrar okut"; }
+      return;
+    }
+    /* form alanları tek doğruluk kaynağı: okuma yalnızca yazar, hiçbir alanı silmez */
+    besinGoster(yeni);
+    const dolu = [...document.querySelectorAll("[data-bs]")].filter(a=>a.value.trim()).length;
+    tarDurum(`${okunan.length} değer okundu · formda ${dolu} dolu alan`);
+  }catch(err){
+    tarDurum("Okuma başarısız — değerleri elle girin.");
+  }finally{
+    if(btn){ btn.disabled = false; btn.textContent = "Tekrar okut"; }
+  }
+}
+
+/* OCR sonuçlarını forma yazar — kullanıcının elle girdiği alanlara dokunmaz */
+function besinGoster(b){
+  Object.keys(b).forEach(k=>{
+    if(b[k] === null || b[k] === undefined) return;
+    const alan = document.getElementById("bs_"+k);
+    if(!alan || alan.dataset.elle) return;          /* elle yazılmışsa koru */
+    alan.value = String(+(+b[k]).toFixed(k==="kcalKg"?0:1)).replace(".",",");
+  });
+  kcalTurev();
+}
+
+/* kcal/kg alanından kcal/g alanını türetir */
+function kcalTurev(){
+  const kg = document.getElementById("bs_kcalKg");
+  const g  = document.getElementById("tarKcal");
+  if(!kg || !g || g.dataset.elle) return;
+  const v = parseFloat(String(kg.value).replace(",","."));
+  if(v > 0) g.value = String(+(v/1000).toFixed(2)).replace(".",",");
+}
+
+/* formdaki tüm besin alanlarını okur */
+function besinTopla(){
+  const b = {};
+  document.querySelectorAll("[data-bs]").forEach(a=>{
+    const v = parseFloat(String(a.value).replace(",","."));
+    if(!isNaN(v)) b[a.dataset.bs] = v;
+  });
+  const ekstra = [...document.querySelectorAll("#bsEkstra .bs-ekstra")].map(r=>({
+    ad: r.querySelector(".ea").value.trim(),
+    deger: r.querySelector(".ed").value.trim()
+  })).filter(x=>x.ad && x.deger);
+  if(ekstra.length) b.ekstra = ekstra;
+  return Object.keys(b).length ? b : null;
+}
+
+/* kullanıcının kendi tanımladığı besin satırı */
+function besinEkstraEkle(ad, deger){
+  const kap = document.getElementById("bsEkstra");
+  if(!kap) return;
+  const satir = el(`<div class="bs-satir bs-ekstra">
+      <input class="tinput ea" placeholder="Değer adı — örn. Omega-3" aria-label="Değer adı" value="${ad||""}">
+      <input class="tinput ed" placeholder="örn. 8,5 g" aria-label="Miktar" value="${deger||""}">
+      <button type="button" class="bs-sil" aria-label="Satırı sil">×</button>
+    </div>`);
+  satir.querySelector(".bs-sil").addEventListener("click", ()=>satir.remove());
+  kap.appendChild(satir);
+  satir.querySelector(".ea").focus();
+}
+
+/* ZXing yalnızca gerektiğinde indirilir — Chrome'da hiç yüklenmez */
+function zxingYukle(){
+  if(window.ZXing) return Promise.resolve(true);
+  return new Promise(res=>{
+    const s = document.createElement("script");
+    s.src = "zxing.js";
+    s.onload = ()=>res(!!window.ZXing);
+    s.onerror = ()=>res(false);
+    document.head.appendChild(s);
+  });
+}
+
+function tarayiciKapat(){
+  if(tarDongu){ clearInterval(tarDongu); tarDongu = null; }
+  if(tarAkis){ tarAkis.getTracks().forEach(t=>t.stop()); tarAkis = null; }
+  tarayici.classList.add("hidden");
+  tarayici.innerHTML = "";
+  delete tarayici.dataset.kod;      /* sonraki taramaya eski veri sızmasın */
+  delete tarayici.dataset.rc;
+  delete tarayici.dataset.besin;
+}
+
+/* Open Pet Food Facts sorgusu — ücretsiz, anahtarsız, CORS açık.
+   Ürün adı ve markayı getirir; kalori değeri çoğu kayıtta bulunmaz.        */
+async function barkodSorgula(kod){
+  const alanlar = "product_name,brands,quantity,image_front_small_url,nutriments";
+  const url = `https://world.openpetfoodfacts.org/api/v2/product/${encodeURIComponent(kod)}.json?fields=${alanlar}`;
+  const c = new AbortController();
+  const zamanAsimi = setTimeout(()=>c.abort(), 6000);   /* sunumda beklemede kalmasın */
+  try{
+    const y = await fetch(url, {signal:c.signal});
+    if(!y.ok) return null;
+    const d = await y.json();
+    const p = d && d.product;
+    if(!p || !p.product_name) return null;
+    const n = p.nutriments || {};
+    const kcal100 = n["energy-kcal_100g"] ?? n["energy-kcal"] ??
+                    (n["energy_100g"] ? n["energy_100g"]/4.184 : null);
+    return {
+      ad: p.product_name.trim(),
+      marka: (p.brands||"").split(",")[0].trim(),
+      miktar: p.quantity || "",
+      gorsel: p.image_front_small_url || "",
+      kcal: kcal100 ? +(kcal100/100).toFixed(2) : null
+    };
+  }catch(_){ return null; }
+  finally{ clearTimeout(zamanAsimi); }
+}
+
+/* okunan kodu ürüne çevirir */
+function kodBulundu(kod){
+  if(tarDongu){ clearInterval(tarDongu); tarDongu = null; }
+  if(navigator.vibrate) navigator.vibrate(60);
+
+  const kayit = BARKODLAR[kod];
+  const katalog = (window.RC_KATALOG || {})[kod];
+  const royalCanin = RC_ONEK.some(o=>kod.startsWith(o)) || !!katalog;
+
+  if(kayit){
+    tarDurum("Ürün tanındı", kod);
+    if(!MAMALAR.some(m=>m.ad.toLowerCase()===kayit.ad.toLowerCase())){
+      MAMALAR.push({ad:kayit.ad, kisa:kayit.ad.split(" ")[0], kcal:kayit.kcal, not:kayit.not, barkod:kod});
+    }
+    AYAR.mama = kayit.ad;
+    setTimeout(()=>{
+      tarayiciKapat(); closeSheet();
+      rerender("genel"); rerender("ayar");
+      showToast("Eklendi: Royal Canin " + kayit.ad + " · " + nf(kayit.kcal,2) + " kcal/g");
+    }, 650);
+    return;
+  }
+
+  /* Royal Canin katalogunda var: ad ve kategori bilinir, kalori sorulur */
+  if(katalog){
+    tarDurum("Royal Canin " + katalog.ad, kod);
+    elleGiris(kod, true, {
+      ad: katalog.ad,
+      kcal: katalog.kcal || null,
+      gorsel: "",
+      miktar: [katalog.kategori, katalog.boy].filter(Boolean).join(" · ")
+    });
+    return;
+  }
+
+  /* yerel katalogda yok: açık veritabanından ürünü çekmeyi dene */
+  tarDurum(royalCanin ? "Ürün aranıyor…" : "Royal Canin ürünü değil — aranıyor…", kod);
+  barkodSorgula(kod).then(bulgu=>{
+    if(bulgu){
+      const tamAd = bulgu.marka && !bulgu.ad.toLowerCase().includes(bulgu.marka.toLowerCase())
+        ? `${bulgu.marka} ${bulgu.ad}` : bulgu.ad;
+      tarDurum(royalCanin
+        ? (bulgu.kcal ? "Ürün bulundu" : "Ürün bulundu — kalori değerini girin")
+        : "Royal Canin ürünü değil", kod);
+      elleGiris(kod, royalCanin, {
+        ad: tamAd.replace(/\b\w/g, ch=>ch.toUpperCase()),
+        kcal: bulgu.kcal,
+        gorsel: bulgu.gorsel,
+        miktar: bulgu.miktar
+      });
+    }else{
+      tarDurum(royalCanin ? "Royal Canin ürünü — bilgileri tamamlayın" : "Kod okundu — bilgileri tamamlayın", kod);
+      elleGiris(kod, royalCanin);
+    }
+  });
+}
+
+/* kamera yoksa veya ürün tanınmadıysa elle giriş */
+function elleGiris(kod, royalCanin, bulgu){
+  const alt = tarayici.querySelector(".tar-alt");
+  if(!alt) return;                       /* tarayıcı bu arada kapatılmış olabilir */
+  const btn = tarayici.querySelector(".tar-elle");
+  if(btn) btn.remove();
+
+  /* okunan kod her durumda kaydedilmeli — form önceden açılmış olsa bile */
+  if(kod){
+    tarayici.dataset.kod = kod;
+    tarayici.dataset.rc  = royalCanin ? "1" : "";
+  }
+  const mevcut = alt.querySelector(".tar-form");
+  if(mevcut){
+    const kodAlan = document.getElementById("tarKod");
+    if(kod && kodAlan){ kodAlan.value = kod; kodAlan.readOnly = true; }
+    markaUyarisi(kod, royalCanin);        /* form önceden açılmış olsa da uyarı gösterilir */
+    if(bulgu) bulguDoldur(bulgu);
+    return;
+  }
+  alt.insertAdjacentHTML("beforeend", `
+    <div class="tar-form">
+      ${kod ? "" : `<input class="tinput" id="tarKod" inputmode="numeric" placeholder="Barkod numarası" aria-label="Barkod numarası">`}
+      <input class="tinput" id="tarAd" placeholder="Ürün adı${royalCanin?" (Royal Canin)":""}" aria-label="Ürün adı">
+      <input class="tinput" id="tarKcal" inputmode="decimal" placeholder="Kalori değeri — örn. 3,60" aria-label="kcal/g">
+
+      <div class="tar-besin">
+        <div class="baslik">
+          Besin değerleri
+          <button type="button" data-tar="besinSifirla">tümünü temizle</button>
+        </div>
+        ${["kcalKg","protein","yag","kul","lif","nem"].map(k=>`
+          <label class="bs-satir">
+            <span>${BESIN_AD[k]}</span>
+            <input class="tinput" id="bs_${k}" data-bs="${k}" inputmode="decimal" placeholder="—" aria-label="${BESIN_AD[k]}">
+            <em>${BESIN_BIRIM[k]}</em>
+          </label>`).join("")}
+        <div id="bsEkstra"></div>
+        <button type="button" class="bs-ekle" data-tar="besinEkstraEkle">+ Başka değer ekle</button>
+        <div class="fhint" style="color:rgba(255,255,255,.5)">
+          Boş bıraktığınız alan kaydedilmez. Okunan bir değeri düzeltebilir veya silebilirsiniz.
+        </div>
+      </div>
+
+      <button type="button" class="btn" data-tar="besinOku">Besin tablosunu okut</button>
+      <button type="button" class="btn primary" data-tar="kaydet">Ekle ve seç</button>
+    </div>`);
+  if(!kod){ tarayici.dataset.kod = ""; tarayici.dataset.rc = ""; }
+  markaUyarisi(kod, royalCanin);
+  if(bulgu) bulguDoldur(bulgu);
+  const ad = document.getElementById("tarAd");
+  if(ad && !ad.value) ad.focus();
+  else{ const k = document.getElementById("tarKcal"); if(k) k.focus(); }
+}
+
+/* Royal Canin dışı ürünlerde açık uyarı — form nasıl açılmış olursa olsun çalışır */
+function markaUyarisi(kod, royalCanin){
+  const form = tarayici.querySelector(".tar-form");
+  if(!form) return;
+  const mevcut = form.querySelector(".tar-marka-uyari");
+  if(!kod || royalCanin){ if(mevcut) mevcut.remove(); return; }
+  if(mevcut) return;
+  form.insertAdjacentHTML("afterbegin", `
+    <div class="tar-marka-uyari">
+      <span class="ikon">!</span>
+      <span>
+        <b>Bu ürün Royal Canin değil.</b>
+        Barkod Royal Canin kataloğunda bulunmuyor. Ürünü yine de ekleyebilirsiniz;
+        besin değerlerini paketten okutmanız veya elle girmeniz gerekir.
+      </span>
+    </div>`);
+}
+
+/* açık veritabanından gelen bilgileri forma yerleştirir */
+function bulguDoldur(b){
+  const ad = document.getElementById("tarAd");
+  const kcal = document.getElementById("tarKcal");
+  if(ad) ad.value = b.ad || "";
+  if(kcal && b.kcal) kcal.value = String(b.kcal).replace(".",",");
+  const form = tarayici.querySelector(".tar-form");
+  if(form && !form.querySelector(".tar-urun")){
+    form.insertAdjacentHTML("afterbegin", `
+      <div class="tar-urun">
+        ${b.gorsel ? `<img src="${b.gorsel}" alt="">` : `<span class="yer"></span>`}
+        <span class="fstack">
+          <span class="flabel" style="font-weight:600;color:#fff">${b.ad}</span>
+          <span class="fhint" style="color:rgba(255,255,255,.6)">
+            ${b.miktar ? b.miktar + " · " : ""}${b.kcal ? nf(b.kcal,2)+" kcal/g" : "kalori değeri veritabanında yok"}
+          </span>
+        </span>
+      </div>`);
+  }
+}
+
+/* kullanıcı bir alana elle yazdıysa işaretle: sonraki OCR onu ezmesin */
+tarayici.addEventListener("input", e=>{
+  const a = e.target;
+  if(a.matches("[data-bs], #tarKcal")){
+    if(a.value.trim()) a.dataset.elle = "1"; else delete a.dataset.elle;
+    if(a.dataset.bs === "kcalKg") kcalTurev();
+  }
+});
+
+tarayici.addEventListener("click", e=>{
+  const b = e.target.closest("[data-tar]"); if(!b) return;
+  const a = b.dataset.tar;
+  if(a==="kapat"){ tarayiciKapat(); return; }
+  if(a==="elle"){ elleGiris(); return; }
+  if(a==="besinOku"){ besinOku(); return; }
+  if(a==="besinEkstraEkle"){ besinEkstraEkle(); return; }
+  if(a==="besinSifirla"){
+    tarayici.querySelectorAll("[data-bs]").forEach(x=>{ x.value = ""; delete x.dataset.elle; });
+    const kap = document.getElementById("bsEkstra"); if(kap) kap.innerHTML = "";
+    tarDurum("Besin alanları temizlendi");
+    return;
+  }
+  if(a==="kaydet"){
+    const kodAlan = document.getElementById("tarKod");
+    const kod = tarayici.dataset.kod || (kodAlan ? kodAlan.value.trim() : "");
+    const ad = document.getElementById("tarAd").value.trim();
+    const kcal = parseFloat(String(document.getElementById("tarKcal").value).replace(",","."));
+    if(!ad){ tarDurum("Ürün adı boş olamaz", kod); return; }
+    if(!(kcal >= 1 && kcal <= 6)){ tarDurum("Kalori değeri 1–6 kcal/g aralığında olmalı", kod); return; }
+    if(MAMALAR.some(m=>m.ad.toLowerCase()===ad.toLowerCase())){ tarDurum("Bu ürün listede zaten var", kod); return; }
+    const rc = tarayici.dataset.rc === "1";
+    const besin = besinTopla();
+    MAMALAR.push({
+      ad, kisa:ad.split(" ")[0], kcal, barkod:kod, ozel:!rc, besin, rcDisi:!rc,
+      not: rc ? "Royal Canin · barkodla eklendi" : "Royal Canin dışı ürün"
+    });
+    AYAR.mama = ad;
+    tarayiciKapat(); closeSheet();
+    rerender("genel"); rerender("ayar");
+    showToast("Eklendi: " + ad + " · " + nf(kcal,2) + " kcal/g");
+  }
+});
+
+/* panel, .views dışında durduğu için kendi dinleyicisine ihtiyaç duyar */
+sheet.addEventListener("click", e=>{
+  if(e.target === sheet){ closeSheet(); return; }                 /* karartılmış alana dokunuş */
+  if(e.target.closest('[data-act="sheetKapat"]')){ closeSheet(); return; }
+
+  /* profil seçimi */
+  const ps = e.target.closest("[data-profil]");
+  if(ps){
+    profilBagla(+ps.dataset.profil);
+    closeSheet();
+    ["genel","analiz","grafik","uyari","ayar"].forEach(rerender);
+    showToast(PET.ad + " profiline geçildi");
+    return;
+  }
+  const pa = e.target.closest("[data-act]");
+  if(pa){
+    const a = pa.dataset.act;
+    if(a==="yeniHayvanAc"){ openYeniHayvanSheet(); return; }
+    if(a==="profilGeri"){ openProfilSheet(); return; }
+    if(a==="yeniHayvanKaydet"){
+      const ad = document.getElementById("yhAd").value.trim();
+      const kilo = parseFloat(String(document.getElementById("yhKilo").value).replace(",","."));
+      let hedef = parseFloat(String(document.getElementById("yhHedef").value).replace(",","."));
+      if(!ad){ showToast("İsim boş olamaz"); return; }
+      if(!(kilo > 0.3 && kilo < 120)){ showToast("Geçerli bir kilo girin (kg)"); return; }
+      if(!(hedef > 0.3 && hedef < 120)) hedef = kilo;
+      const tur = sheet.querySelector('[data-opt="yeniTur"] [aria-pressed="true"]');
+      const cins = sheet.querySelector('[data-opt="yeniCinsiyet"] [aria-pressed="true"]');
+      const onizleme = document.getElementById("yhOnizleme");
+      PROFILLER.push(yeniProfilOlustur({
+        ad, tur: tur ? tur.dataset.v : "kopek",
+        irk: document.getElementById("yhIrk").value.trim(),
+        yas: document.getElementById("yhYas").value.trim(),
+        cinsiyet: cins ? cins.dataset.v : "Dişi",
+        kilo, idealKilo: hedef,
+        foto: (onizleme && onizleme.dataset.veri) || ""
+      }));
+      profilBagla(PROFILLER.length - 1);
+      closeSheet();
+      ["genel","analiz","grafik","uyari","ayar"].forEach(rerender);
+      showToast(PET.ad + " profili oluşturuldu");
+      return;
+    }
+  }
+  /* panel içindeki seçenek grupları (tür, cinsiyet) */
+  const so = e.target.closest("[data-opt] button");
+  if(so){
+    so.closest("[data-opt]").querySelectorAll("button")
+      .forEach(x=>x.setAttribute("aria-pressed", x===so));
+    return;
+  }
+
+  const ac = e.target.closest("[data-act]");
+  if(ac){
+    const a = ac.dataset.act, form = document.getElementById("mamaForm");
+    if(a==="mamaEkleAc"){
+      form.classList.remove("hidden");
+      ac.classList.add("hidden");
+      form.scrollIntoView({block:"nearest"});
+      document.getElementById("yeniMamaAd").focus();
+      return;
+    }
+    if(a==="mamaEkleKapat"){
+      form.classList.add("hidden");
+      sheet.querySelector('[data-act="mamaEkleAc"]').classList.remove("hidden");
+      return;
+    }
+    if(a==="barkod"){ tarayiciAc(); return; }
+    if(a==="mamaEkleKaydet"){
+      const ad = document.getElementById("yeniMamaAd").value.trim();
+      const kcal = parseFloat(String(document.getElementById("yeniMamaKcal").value).replace(",","."));
+      const not = document.getElementById("yeniMamaNot").value.trim();
+      if(!ad){ showToast("Ürün adı boş olamaz"); return; }
+      if(!(kcal > 0)){ showToast("Kalori değeri girin (kcal/g)"); return; }
+      if(kcal < 1 || kcal > 6){ showToast("Kalori değeri 1–6 kcal/g aralığında olmalı"); return; }
+      if(MAMALAR.some(m=>m.ad.toLowerCase() === ad.toLowerCase())){ showToast("Bu ürün listede zaten var"); return; }
+      MAMALAR.push({ad, kisa:ad.split(" ")[0], kcal, not: not || "Kullanıcı kaydı", ozel:true});
+      AYAR.mama = ad;
+      closeSheet();
+      rerender("ayar"); rerender("genel");
+      showToast("Eklendi ve seçildi: " + ad);
+      return;
+    }
+  }
+
+  const mo = e.target.closest("[data-mama]");
+  if(mo){
+    AYAR.mama = mo.dataset.mama;
+    closeSheet();
+    rerender("ayar"); rerender("genel");
+    showToast("Mama güncellendi: " + AYAR.mama);
+  }
+});
+
+views.addEventListener("input", e=>{
+  const r = e.target.closest("[data-range]");
+  if(r){
+    PET.idealKilo = parseFloat(r.value);
+    const lbl = document.querySelector('[data-bind="hedefkilo"]');
+    if(lbl) lbl.textContent = nf(PET.idealKilo,2)+" kg";
+    const val = document.querySelector('[data-val="hedef"]');
+    if(val) val.textContent = nf(PET.idealKilo,2)+" kg";
+    rerender("genel");
+    return;
+  }
+  const p = e.target.closest("[data-pet]");
+  if(p){
+    PET[p.dataset.pet] = p.value;
+    const val = document.querySelector('[data-val="hayvan"]');
+    if(val) val.textContent = PET.ad;
+    rerender("genel");
+  }
+});
+
+/* =========================================================================
+   A4 KLİNİK ANALİZ RAPORU
+   ========================================================================= */
+const ECW_GECMIS = [0.373,0.372,0.372,0.371,0.370,0.370,0.369,0.368];
+const P = {red:"#E2001A", ok:"#1B9E5E", warn:"#EE9A12", info:"#2F6FDB", ink:"#1A1418", ink3:"#8E8388", line:"#C9C2C5"};
+
+/* ölçekli çubuk satırı */
+function rpBar(ad, alt, deger, birim, plot, sMin, sMax, bLo, bHi, cls){
+  const w = x => (((Math.min(Math.max(x,sMin),sMax)-sMin)/(sMax-sMin))*100);
+  return `<div class="rp-bar">
+    <span class="nm">${ad}<i>${alt}</i></span>
+    <span class="rp-track">
+      <span class="band" style="left:${w(bLo).toFixed(1)}%;width:${(w(bHi)-w(bLo)).toFixed(1)}%"></span>
+      <span class="fill ${cls}" style="width:${w(plot).toFixed(1)}%"></span>
+    </span>
+    <span class="vl">${deger}<i>${birim}</i></span>
+  </div>`;
+}
+const rpScale = (arr, sag) => `<div class="rp-scale${sag?" right":""}">${arr.map(v=>`<span>${v}</span>`).join("")}</div>`;
+
+function reportHTML(){
+  const toplam = PET.kilo;
+  const yag = VUCUT.yag, yagsiz = toplam-yag, yagOran = VUCUT.yagOran;
+  const KOMP = [
+    {ad:"Toplam kas kütlesi", kg:VUCUT.kas, ideal:VUCUT.kasIdeal},
+    {ad:"Yağ kütlesi",        kg:VUCUT.yag, ideal:VUCUT.yagIdeal}
+  ];
+  const tbw = SIVI.icw+SIVI.ecw, ecwOran = SIVI.ecw/tbw;
+  const idealYagsiz = PET.idealKilo*0.825, idealYag = PET.idealKilo*0.175;
+  const pAgirlik = toplam/PET.idealKilo*100, pYagsiz = yagsiz/idealYagsiz*100, pYag = yag/idealYag*100;
+  const puan = Math.max(0,Math.min(100, Math.round(100 - Math.abs(yagOran-16)*1.5 - Math.abs(toplam-PET.idealKilo)*6)));
+  const bugun = new Date().toLocaleDateString("tr-TR",{day:"2-digit",month:"2-digit",year:"numeric"});
+  const saat  = new Date().toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"});
+  const g = DATA.yil, son = g.kilo.length;
+
+  const inBar = (lbl, birim, val, pct, s1, s2, s3, s4) => {
+    let visualPct = Math.min(100, (pct / 200) * 100);
+    return `<div class="in-bar">
+      <div class="in-bar-lbl">${lbl}<span>${birim}</span></div>
+      <div class="in-bar-area">
+        <div class="in-bar-scale"><span>${s1}</span><span>${s2}</span><span>${s3}</span><span>${s4}</span><span></span></div>
+        <div class="in-track">
+          <div class="in-t-low"></div><div class="in-t-mid"></div><div class="in-t-high"></div>
+          <div class="in-fill" style="width:${visualPct}%"><span class="in-num">${val}</span></div>
+        </div>
+      </div>
+    </div>`;
+  };
+
+  const W = 100, H = 14;
+  const dx = W / 8;
+  const drawRow = (arr, lbl, unit) => {
+    const vals = arr.slice(-8);
+    const min = Math.min(...vals)*0.95, max = Math.max(...vals)*1.05;
+    const py = v => 11 - ((v - min) / (max - min)) * 6;
+    let p = smoothPath(vals.map((v,i)=>[dx/2 + i*dx, py(v)]));
+    return `<div style="display:grid; grid-template-columns:25% 75%; border-bottom:1px solid #ccc; font-size:6.5pt; align-items:center;">
+      <div style="font-weight:bold; padding-left:2px">${lbl} <br><span style="font-weight:normal; font-size:5pt; color:#666">(${unit})</span></div>
+      <svg viewBox="0 0 100 14" style="width:100%; height:auto; overflow:visible;">
+        ${Array.from({length:8},(_,i)=>`<line x1="${dx/2+i*dx}" y1="0" x2="${dx/2+i*dx}" y2="14" stroke="#ddd" stroke-dasharray="0.5 0.5" stroke-width="0.2"/>`).join("")}
+        <path d="${p}" stroke="#000" stroke-width="0.3" fill="none"/>
+        ${vals.map((v,i)=>`<circle cx="${dx/2+i*dx}" cy="${py(v)}" r="0.6" fill="#000"/><text x="${dx/2+i*dx}" y="${py(v)-1}" font-size="3" text-anchor="middle">${nf(v,1)}</text>`).join("")}
+      </svg>
+    </div>`;
+  };
+  const hLabels = g.etiket.slice(-8).map((l,i)=>`<div style="font-size:5pt; color:#444; text-align:center">${l}</div>`).join("");
+  const svgHistory = `<div style="border-top:1.5px solid var(--in-line); border-bottom:1px solid var(--in-line);">
+    ${drawRow(g.kilo, "Ağırlık", "kg")}
+    ${drawRow(g.kas, "İskelet Kası", "kg")}
+    ${drawRow(g.yag.map((v,i)=>v/g.kilo[i]*100), "Vücut Yağ Oranı", "%")}
+    ${drawRow(g.yag.map(v=>0.370+Math.random()*0.004), "ECW Oranı", "")}
+    <div style="display:grid; grid-template-columns:25% 75%; align-items:center;">
+      <div style="font-size:5pt; font-weight:bold; padding-left:2px;">&#10003; En son &#9744; Toplam</div>
+      <div style="display:grid; grid-template-columns:repeat(8, 1fr); padding-top:2px;">${hLabels}</div>
+    </div>
+  </div>`;
+
+  const svgVisceral = `<svg viewBox="0 0 100 50" style="width:100%; height:auto; margin:4px 0;">
+    <path d="M 15 45 Q 25 15 50 15 T 85 10 Q 90 30 75 40 T 15 45 Z" fill="#d9d9d9"/>
+    <line x1="10" y1="25" x2="100" y2="25" stroke="#888" stroke-width="0.2"/>
+    <line x1="10" y1="50" x2="100" y2="50" stroke="#000" stroke-width="0.5"/>
+    <line x1="10" y1="0" x2="10" y2="50" stroke="#000" stroke-width="0.5"/>
+    <text x="12" y="5" font-size="3.5" font-weight="bold">VYA(cm²)</text>
+    <text x="35" y="48" font-size="3.5">2</text>
+    <text x="60" y="48" font-size="3.5">4</text>
+    <text x="85" y="48" font-size="3.5">6 Yaş</text>
+    <text x="4" y="15" font-size="3.5">150</text>
+    <text x="4" y="26" font-size="3.5">100</text>
+    <text x="5" y="38" font-size="3.5">50</text>
+    <g transform="translate(35, 38)">
+      <line x1="-2" y1="0" x2="2" y2="0" stroke="#000" stroke-width="0.6"/>
+      <line x1="0" y1="-2" x2="0" y2="2" stroke="#000" stroke-width="0.6"/>
+      <text x="3" y="-1" font-size="4" font-weight="bold">${PET.visseral*10}</text>
+    </g>
+  </svg>`;
+
+  const svgImpedance = `<div style="font-size:7.5pt; font-weight:bold; margin-top:10px; padding-bottom:2px; border-bottom:1px solid #ccc;">Direnç</div>
+  <svg viewBox="0 0 100 55" style="width:100%; height:auto; margin-top:4px;">
+    <line x1="15" y1="0" x2="15" y2="50" stroke="#000" stroke-width="0.4"/>
+    <line x1="85" y1="0" x2="85" y2="50" stroke="#000" stroke-width="0.4"/>
+    <text x="13" y="10" font-size="3" text-anchor="end">5</text>
+    <text x="13" y="20" font-size="3" text-anchor="end">50</text>
+    <text x="13" y="25" font-size="3" text-anchor="end">250</text>
+    <text x="13" y="35" font-size="3" text-anchor="end">500</text>
+    <text x="13" y="45" font-size="3" text-anchor="end">kHz</text>
+    <text x="10" y="54" font-size="3.5" font-weight="bold">Z(Ω)</text>
+    <text x="22" y="54" font-size="3.5">RA</text>
+    <text x="37" y="54" font-size="3.5">LA</text>
+    <text x="52" y="54" font-size="3.5">TR</text>
+    <text x="67" y="54" font-size="3.5">RL</text>
+    <text x="80" y="54" font-size="3.5">LL</text>
+    <text x="90" y="54" font-size="3.5">TR</text>
+    <path d="M 15 15 L 25 16 L 40 45 L 55 20 L 70 21 L 85 28 L 95 10" stroke="#333" stroke-width="0.2" fill="none"/>
+    <path d="M 15 18 L 25 19 L 40 46 L 55 22 L 70 23 L 85 35 L 95 20" stroke="#555" stroke-width="0.2" fill="none"/>
+    <path d="M 15 25 L 25 26 L 40 48 L 55 26 L 70 27 L 85 40 L 95 30" stroke="#777" stroke-width="0.2" fill="none"/>
+    <circle cx="15" cy="15" r="0.4" fill="#000"/> <circle cx="25" cy="16" r="0.4" fill="#000"/> <circle cx="40" cy="45" r="0.4" fill="#000"/> <circle cx="55" cy="20" r="0.4" fill="#000"/> <circle cx="70" cy="21" r="0.4" fill="#000"/>
+    <circle cx="15" cy="18" r="0.4" fill="#000"/> <circle cx="25" cy="19" r="0.4" fill="#000"/> <circle cx="40" cy="46" r="0.4" fill="#000"/> <circle cx="55" cy="22" r="0.4" fill="#000"/> <circle cx="70" cy="23" r="0.4" fill="#000"/>
+    <circle cx="15" cy="25" r="0.4" fill="#000"/> <circle cx="25" cy="26" r="0.4" fill="#000"/> <circle cx="40" cy="48" r="0.4" fill="#000"/> <circle cx="55" cy="26" r="0.4" fill="#000"/> <circle cx="70" cy="27" r="0.4" fill="#000"/>
+  </svg>`;
+
+  return `<div class="report" style="-webkit-print-color-adjust:exact;print-color-adjust:exact">
+    <div class="in-head">
+      <div class="in-logo" style="display:flex;align-items:center;gap:3mm">
+        <img src="logo-amblem.png" alt="" style="height:12mm;width:auto;display:block">
+        <img src="logo-yazi.png" alt="Kaloritim" style="height:6mm;width:auto;display:block">
+      </div>
+      <div class="in-head-r">[BWA2.0]<br>${PET.cihaz} · yazılım 2.4.1</div>
+    </div>
+    <div class="in-id">
+      <div><div class="k">Kimlik / Hasta</div><div class="v">${PET.ad}</div></div>
+      <div><div class="k">Irk</div><div class="v">${PET.irk}</div></div>
+      <div><div class="k">Yaş</div><div class="v">${PET.yas.replace(/\D/g,"")}</div></div>
+      <div><div class="k">Cinsiyet</div><div class="v">${PET.cinsiyet.split("·")[0]}</div></div>
+      <div><div class="k">Test Tarihi / Saat</div><div class="v">${bugun} ${saat}</div></div>
+    </div>
+
+    <div class="in-cols">
+      <div>
+        <div class="in-sec">
+          <div class="in-sec-title">Vücut Kompozisyon Analizi</div>
+          <table class="in-comp">
+            <tr><th>Değerler</th><th>Toplam Vücut Suyu</th><th>Yağsız Ağırlık</th><th>Ağırlık</th></tr>
+            <tr>
+              <td class="lbl">Vücut Suyu<div class="rng">(1,9 - 2,3)</div></td>
+              <td rowspan="2">
+                <div class="val">${nf(tbw,2)}</div>
+                <div class="rng">(1,90 - 2,30)</div>
+              </td>
+              <td rowspan="3" style="border-bottom:1px solid var(--in-line)">
+                <div class="val">${nf(yagsiz,2)}</div>
+                <div class="rng">(${nf(idealYagsiz*0.9,1)} - ${nf(idealYagsiz*1.1,1)})</div>
+              </td>
+              <td rowspan="4" style="border-bottom:1px solid var(--in-line)">
+                <div class="val">${nf(toplam,2)}</div>
+                <div class="rng">(${nf(PET.idealKilo*0.9,1)} - ${nf(PET.idealKilo*1.1,1)})</div>
+              </td>
+            </tr>
+            <tr>
+              <td class="lbl">Protein<div class="rng">(0,55 - 0,7)</div></td>
+            </tr>
+            <tr>
+              <td class="lbl">Mineral<div class="rng">(0,18 - 0,24)</div></td>
+              <td style="border-bottom:1px solid var(--in-line)"><div class="val">0,20</div></td>
+            </tr>
+            <tr>
+              <td class="lbl">Vücut Yağ Ağ.<div class="rng">(0,45 - 0,75)</div></td>
+              <td colspan="2"><div class="val">${nf(yag,2)}</div></td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="in-sec">
+          <div class="in-sec-title">Kas-Yağ Analizi</div>
+          ${inBar("Ağırlık", "(kg)", nf(toplam,2), pAgirlik, "55", "85", "115", "145")}
+          ${inBar("İskelet Kası", "(kg)", nf(yagsiz,2), pYagsiz, "70", "90", "110", "130")}
+          ${inBar("Vücut Yağ Ağ.", "(kg)", nf(yag,2), pYag, "40", "80", "160", "220")}
+        </div>
+
+        <div class="in-sec">
+          <div class="in-sec-title">Obezite Analizi</div>
+          ${inBar("BKİ", "(vücut kitle indeksi)", nf(PET.bmi,1), PET.bmi/22*100, "10", "15", "25", "35")}
+          ${inBar("Vücut Yağ Oranı", "(%)", nf(yagOran,1), yagOran/16*100, "5", "12", "20", "28")}
+        </div>
+
+        <div class="in-sec">
+          <div class="in-sec-title">Bölümlere Göre Zayıflık Analiz</div>
+          ${BOLGESEL.map(b=>inBar(b.ad, "(kg)", nf(b.kg,2), b.pct, "55", "85", "115", "145")).join("")}
+        </div>
+
+        <div class="in-sec">
+          <div class="in-sec-title">Hücre Dışı Sıvı (ECW) Oranı Analizi</div>
+          ${inBar("ECW Oranı", "", ecwOran.toFixed(3), ecwOran/0.380*100, "0,320", "0,360", "0,390", "0,420")}
+        </div>
+
+        <div class="in-sec">
+          <div class="in-sec-title">Vücut Yapısı Geçmişi</div>
+          ${svgHistory}
+        </div>
+      </div>
+
+      <div>
+        <div class="in-sec" style="margin-bottom:12px;">
+          <div class="in-sec-title" style="border-top:none; background:none; border-bottom:1.5px solid var(--in-line); padding:0 0 4px;">InBody Puanı</div>
+          <div class="in-score"><span class="n">${puan}</span><span class="u">/ 100 Puan</span></div>
+          <div class="in-score-desc">* Vücut yapısının değerlendirmesini yansıtan<br>toplam puan. Kaslı bir köpek 100 puan üzerinde olabilir.</div>
+        </div>
+
+        <div class="in-sec">
+          <div class="in-sec-title" style="border-top:none; background:none; border-bottom:1.5px solid var(--in-line); padding:0 0 4px;">Viseral Yağ Alanı</div>
+          ${svgVisceral}
+        </div>
+
+        <div class="in-sec">
+          <div class="in-sec-title" style="border-top:none; background:none; border-bottom:1.5px solid var(--in-line); padding:0 0 4px;">Hedef Ağırlık Değişimi</div>
+          <ul class="in-list">
+            <li><span>Hedef Ağırlık</span><span class="v">${nf(PET.idealKilo,2)} kg</span></li>
+            <li><span>Ağırlık Değişimi</span><span class="v">${nf(PET.idealKilo-toplam,2)} kg</span></li>
+            <li><span>Yağ Değişim Hedefi</span><span class="v">${nf(idealYag-yag,2)} kg</span></li>
+            <li><span>Kas Değişim Hedefi</span><span class="v">${nf(idealYagsiz-yagsiz,2)} kg</span></li>
+          </ul>
+        </div>
+
+        <div class="in-sec">
+          <div class="in-sec-title" style="border-top:none; background:none; border-bottom:1.5px solid var(--in-line); padding:0 0 4px;">Araştırma Parametreleri</div>
+          <ul class="in-list">
+            <li><span>Hücre İçi Su</span><span class="v">${nf(SIVI.icw,2)} L</span></li>
+            <li><span>Hücre Dışı Su</span><span class="v">${nf(SIVI.ecw,2)} L</span></li>
+            <li><span>Bazal Metabolik Hız</span><span class="v">${PET.bmr} kcal</span></li>
+            <li><span>Bel Kalça Oranı</span><span class="v">0,82</span></li>
+            <li><span>Vücut Hücre Kütlesi</span><span class="v">${nf(SIVI.icw*1.5,1)} kg</span></li>
+          </ul>
+        </div>
+
+        ${svgImpedance}
+      </div>
+    </div>
+    <div class="in-foot">
+      <span>Copyright © Kaloritim. Tüm hakları saklıdır. Bu rapor medikal teşhis yerine geçmez.</span>
+      <span>Değerlendiren: Vet. Hek. M. C. Özen</span>
+      <span>S/N: KM-4471-TR</span>
+    </div>
+  </div>`;
+}
+
+const overlay = document.getElementById("reportOverlay");
+function openReport(){
+  document.getElementById("reportSheet").innerHTML = reportHTML();
+  overlay.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  overlay.scrollTop = 0;
+}
+function closeReport(){
+  overlay.classList.add("hidden");
+  document.body.style.overflow = "";
+}
+syncReadout();
+document.getElementById("btnReport").addEventListener("click", openReport);
+document.getElementById("btnCloseReport").addEventListener("click", closeReport);
+document.getElementById("btnPrint").addEventListener("click", ()=>window.print());
+overlay.addEventListener("click", e=>{ if(e.target===overlay) closeReport(); });
+document.addEventListener("keydown", e=>{
+  if(e.key !== "Escape") return;
+  if(!tarayici.classList.contains("hidden")){ tarayiciKapat(); return; }
+  if(!sheet.classList.contains("hidden")){ closeSheet(); return; }
+  if(!overlay.classList.contains("hidden")) closeReport();
+});
+</script>
+</body>
+</html>
