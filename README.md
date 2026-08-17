@@ -1,7 +1,7 @@
 # Kaloritim
 
 **Konsept sahibi: Mehmet Can Özen**
-**E-posta:mehmetcanozen12@gmail.com**
+**E-posta: mehmetcanozen12@gmail.com**
 
 Evcil hayvanlar için akıllı beslenme matı ve vücut analizi uygulamasının
 arayüz konsepti. Royal Canin yarışması kapsamında hazırlanmıştır.
