@@ -17,6 +17,28 @@ tartar. Uygulama bu ölçümlerden vücut kompozisyonu, sıvı dengesi,
 metabolizma ve hareket analizini çıkarır — insanlardaki InBody cihazının
 evcil hayvan karşılığı gibi çalışır.
 
+## Donanım — 3B modelleme
+
+Matın ve tartılı kapların Twinmotion ile hazırlanan görselleştirmeleri
+`3d/` klasöründedir.
+
+![Genel görünüm](3d/02-genel-gorunum.jpg)
+
+Mat zemine serilir ve üzerine çıkan hayvanın ağırlığını ölçer. Üzerinde iki
+tartılı platform bulunur: solda yavaş yeme tasarımlı mama kabı, sağda su kabı.
+Matın ön kenarındaki şerit üç ölçümü birlikte gösterir — ağırlık, tüketilen
+mama ve su.
+
+| | |
+|---|---|
+| ![Önden görünüm](3d/04-onden-tarti-gorunumu.jpg) | ![Mat ve kaplar](3d/05-mat-ve-kaplar.jpg) |
+| Önden görünüm — kenar şeridinde 12,45 kg · 125 g · 250 ml | Tartılı platformlar ve kap altı göstergeleri |
+| ![Mama kabı](3d/06-mama-kabi-yakin.jpg) | ![Su kabı](3d/07-su-kabi-yakin.jpg) |
+| Mama kabı — yavaş yeme labirenti, kap altı tartı | Su kabı — devrilmeyi önleyen bilyeli mafsal |
+
+Diğer açılar: [oda yerleşimi](3d/01-oda-yerlesimi.jpg) ·
+[mat üzerinde ölçüm](3d/03-kopek-mat-uzerinde.jpg)
+
 ## Ekranlar
 
 | Ekran | İçerik |
@@ -46,6 +68,7 @@ Ayrıca A4 klinik analiz raporu üretir (tarayıcıdan PDF olarak kaydedilir).
 ## Dosyalar
 
     index.html          Tüm uygulama (tek dosya)
+    3d/                 Mat ve tartılı kapların 3B görselleştirmeleri
     katalog.js          Royal Canin Türkiye barkod kataloğu
     zxing.js            Barkod çözücü (iOS Safari yedeği)
     tesseract/          OCR motoru ve Türkçe dil modeli
