@@ -713,8 +713,11 @@ input[type=range]{width:100%;accent-color:var(--a-red);height:22px}
 .in-foot {display: flex; justify-content: space-between; border-top: 1.5px solid var(--in-line); padding-top: 4px; font-size: 6.5pt; color: #555; margin-top: 15mm;}
 
 @media print{
+  /* Çıktıda yalnızca rapor kalır: üst şerit, telefon sahnesi ve panel düğmeleri basılmaz.
+     (Şerit .topbar sınıfını kullanıyor; eski .stage-head adı da uyumluluk için duruyor.) */
   body{background:#fff !important}
-  .stage-head,.stage,.report-tools{display:none !important}
+  .topbar,.stage-head,.stage,.report-tools,.toast,.sheet-wrap,.tarayici{display:none !important}
+  body::before{display:none !important}
   .report-overlay{position:static;inset:auto;padding:0;background:none;overflow:visible;display:block !important}
   .report{width:auto;min-height:0;margin:0;box-shadow:none;padding:8mm}
   @page{size:A4 portrait;margin:6mm}
